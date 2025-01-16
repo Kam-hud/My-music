@@ -4,6 +4,7 @@ import { ref} from 'vue'
 import { useRoute } from 'vue-router'
 import draggableList from '@/components/DraggableList.vue'
 import player from './components/Player.vue';
+import Setting from './components/Setting.vue';
 
 // 存储从路由传递过来的导航项
 const navItems = ref([
@@ -21,7 +22,6 @@ const myItems = ref([
     { path: '/myCollection', name: '我的收藏', icon: 'star', showMore: true },
     { path: '/download', name: '下载管理', icon: 'download', showMore: true },
     { path: '/localMusic', name: '本地音乐', icon: 'music', showMore: true },
-    { path: '/musicWebDisk', name: '我的音乐网盘', icon: 'cloud', showMore: true }
 ]);
 
 // 控制"更多"按钮的状态
@@ -108,6 +108,7 @@ const closeModal = () => {
         </div>
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
+            <Setting></Setting>
             <player></player>
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
             <router-view></router-view>

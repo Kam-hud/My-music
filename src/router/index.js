@@ -59,11 +59,6 @@ const routes = [
         path: '/localMusic',
         name: '本地音乐',
         component: () => import('@/views/LocalMusic.vue')
-    },
-    {
-        path: '/musicWebDisk',
-        name: '音乐云盘',
-        component: () => import('@/views/MusicWebDisk.vue')
     }
 ]
 
