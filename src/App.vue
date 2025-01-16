@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref} from 'vue'
 // 引入vue-router的useRoute方法
 import { useRoute } from 'vue-router'
 import draggableList from '@/components/DraggableList.vue'
+import player from './components/Player.vue';
 
 // 存储从路由传递过来的导航项
 const navItems = ref([
@@ -99,16 +100,15 @@ const closeModal = () => {
                         <font-awesome-icon :icon="item.icon" style="margin-right: 10px;" />{{ item.name }}
                     </router-link>
                 </div>
-                <!-- <button @click="toggleShowMore">{{ showMore ? '收起' : '更多' }}</button> -->
                 <span @click="toggleShowMore" class="more-toggle"> 
                     <font-awesome-icon :icon="showMore ? 'angle-up' : 'angle-down'" style="margin-right: 5px;" />
                     {{ showMore ? '收起' : '更多' }} 
                 </span>
             </div>
         </div>
-
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
+            <player></player>
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
             <router-view></router-view>
         </div>
@@ -132,28 +132,28 @@ const closeModal = () => {
         display: flex;
         flex-direction: column;
         overflow-y: auto; // 允许垂直滚动
+        overflow-x: hidden;
 
         // 隐藏滚动条
-        scrollbar-width: thin; /* Firefox */
-        scrollbar-color: transparent transparent; /* Firefox */
+        scrollbar-width: thin; 
+        scrollbar-color: transparent transparent; 
 
-        /* 对于 Webkit 浏览器（Chrome, Safari等） */
-        &::-webkit-scrollbar {
-            width: 8px; /* 滚动条宽度 */
-        }
-        &::-webkit-scrollbar-thumb {
-            background: transparent; /* 滚动条的颜色 */
-            border-radius: 10px; /* 滚动条的圆角 */
-        }
-        &::-webkit-scrollbar-track {
-            background: transparent; /* 滚动条背景 */
-        }
+        // /* 对于 Webkit 浏览器（Chrome, Safari等） */
+        // &::-webkit-scrollbar {
+        //     width: 8px; /* 滚动条宽度 */
+        // }
+        // &::-webkit-scrollbar-thumb {
+        //     background: transparent; /* 滚动条的颜色 */
+        //     border-radius: 10px; /* 滚动条的圆角 */
+        // }
+        // &::-webkit-scrollbar-track {
+        //     background: transparent; /* 滚动条背景 */
+        // }
 
         .sidebar-header{
             padding: 20px;
             text-align: left;
             font-size: 24px;
-            font-weight: bold;
             display: flex;
             align-items: center;
 
