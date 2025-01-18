@@ -1,4 +1,14 @@
 <script setup>
+import { ref } from 'vue';
+import PaintBrush from './PaintBrush.vue';
+
+// 接收父组件传递的背景颜色
+const props = defineProps({
+  backgroundColor: String // 接收传递的背景颜色
+})
+
+const isShowBrush = ref(false)
+
 const goBack = () => { 
     window.history.back()
 }
@@ -6,35 +16,40 @@ const goForward = () => {
     window.history.forward()
 }
 
+const openBrush = () => { 
+    isShowBrush.value = !isShowBrush.value
+}
 </script>
 
 <template>
-    <div class="navbar">
-        <div class="navbar-left">
-            <p class="icon-left" @click="goBack">
-                <font-awesome-icon icon="arrow-left"/>
-            </p>  
-            <p class="icon-left" @click="goForward">
-                <font-awesome-icon icon="arrow-right"/>
-            </p>  
-            <div class="search-container">
-                <font-awesome-icon icon="search" class="search-icon "/>
-                <input type="text" class="search-bar" placeholder="搜索音乐">
+    <!-- <div :style="{ backgroundColor: backgroundColor }" class="setting"> -->
+        <div class="navbar">
+            <div class="navbar-left">
+                <p class="icon-left" @click="goBack">
+                    <font-awesome-icon icon="arrow-left"/>
+                </p>  
+                <p class="icon-left" @click="goForward">
+                    <font-awesome-icon icon="arrow-right"/>
+                </p>  
+                <div class="search-container">
+                    <font-awesome-icon icon="search" class="search-icon "/>
+                    <input type="text" class="search-bar" placeholder="搜索音乐">
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="icon-button">
+                    <font-awesome-icon icon="user-circle"/>
+                </button>
+                <button class="icon-button" @click="openBrush">
+                    <font-awesome-icon icon="paint-brush"/>
+                </button>
+                <button class="icon-button">
+                    <font-awesome-icon icon="bars"/> <!-- 设置图标 -->
+                </button>
             </div>
         </div>
-        <div class="navbar-right">
-            <button class="icon-button">
-                <font-awesome-icon icon="user-circle"/>
-            </button>
-            <button class="icon-button">
-                <font-awesome-icon icon="paint-brush"/>
-            </button>
-            <button class="icon-button">
-                <font-awesome-icon icon="bars"/> <!-- 设置图标 -->
-            </button>
-        </div>
-
-    </div>
+        <PaintBrush v-if="isShowBrush" @change-background="$emit('change-background', $event)"></PaintBrush>
+    <!-- </div>    -->
 </template>
 
 <style lang="scss" scoped>
@@ -43,8 +58,9 @@ const goForward = () => {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #222;
+    // background-color: #222;
     color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 
     .navbar-left {
         display: flex;

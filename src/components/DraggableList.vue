@@ -12,7 +12,6 @@ const edits = ref([
     { id: 4, name: '我的收藏', icon: 'heart' },
     { id: 5, name: '下载管理', icon: 'download' },
     { id: 6, name: '本地音乐', icon: 'hdd' },
-    { id: 7, name: '我的音乐网盘', icon: 'cloud' },
 ])
 
 // 存储被拖动的项目
@@ -93,7 +92,7 @@ const closeSettings = () => {
     .settings-menu {
         position: relative; // 为了绝对定位关闭图标
         width: 540px;
-        height: 570px;
+        height: 500px;
         padding: 20px;
         background-color: #2d2d38;
         border-radius: 18px;
@@ -133,7 +132,7 @@ const closeSettings = () => {
             padding: 0;
             background-color: #34343e;
             border-radius: 8px;
-            height: 360px;
+            height: 320px;
             li {
                 width: 500px;
                 padding: 10px;

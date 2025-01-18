@@ -95,14 +95,6 @@ const togglePause = () => {
                 <button @click="nextSong">
                     <font-awesome-icon icon="fa-solid fa-step-forward" />
                 </button>
-                <!-- 调节音量 -->
-                <!-- <div class="volume-control" @click="toggleVolumeControl">
-                    <font-awesome-icon icon="fa-solid fa-volume-up" style="margin-left: 10px;" />
-                </div>
-                <div class="volume-slider" v-if="showVolumeControls">
-                    <input type="range" min="0" max="100" v-model="volume" @input="changeVolume" class="volume-bar">
-                    <span>{{ volume }}%</span>
-                </div> -->
                 <div class="volume-container"> 
                     <div class="volume-control" @click="toggleVolumeControl">
                         <font-awesome-icon icon="fa-solid fa-volume-up" />
@@ -148,7 +140,7 @@ const togglePause = () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    background-color: #2d2d38;
+    background-color: #222;
     color: white;
     padding: 5px;
     height: 100px; /* 增加高度以容纳进度条和其他内容 */

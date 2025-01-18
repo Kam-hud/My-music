@@ -1,5 +1,5 @@
 <script setup>
-import { ref} from 'vue'
+import { onMounted, ref, watch} from 'vue'
 // 引入vue-router的useRoute方法
 import { useRoute } from 'vue-router'
 import draggableList from '@/components/DraggableList.vue'
@@ -32,6 +32,8 @@ const route = useRoute()
 const edit = ref(false)
 // 控制列表框的显示状态
 const isShowModal = ref(false)
+// 存储背景颜色
+const backgroundColor = ref('#f4f4f4')
 
 // 切换"更多"按钮的显示状态
 const toggleShowMore = () => {
@@ -72,10 +74,28 @@ const openModal = () => {
 const closeModal = () => { 
     isShowModal.value = false;
 }
+
+// 更新背景颜色
+const changeBackgroundColor = (newColor) => { 
+    backgroundColor.value = newColor //更新背景颜色
+    console.log("Updated Background Color:", newColor);
+}
+
+// 监视颜色变化，并将其保存到 localStorage
+watch(backgroundColor, (newColor) => { 
+    localStorage.setItem('savedColor',newColor)
+})
+// 在组件挂载时，尝试从 localStorage 中加载保存的颜色
+onMounted(() => { 
+    const savedColor = localStorage.getItem('savedColor');
+    if (savedColor) { 
+        backgroundColor.value = savedColor
+    }
+})
 </script>
 
 <template>
-    <div id="app">
+    <div :style="{ backgroundColor: backgroundColor}" id="app">
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="@/assets/images/music_logo.png" alt="" class="music-logo">
@@ -108,7 +128,7 @@ const closeModal = () => {
         </div>
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
-            <Setting></Setting>
+            <Setting :background-color="backgroundColor" @change-background="changeBackgroundColor"></Setting>
             <player></player>
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
             <router-view></router-view>
@@ -120,7 +140,7 @@ const closeModal = () => {
 #app{
     display: flex;
     height: 100vh!important;
-    background-color: #f5f5f5;
+    // background-color: #f5f5f5;
 
     .sidebar{
         position: fixed;
@@ -128,29 +148,18 @@ const closeModal = () => {
         left: 0;
         width: 244px;
         height: 100%;
-        background-color: #333;
-        color: #fff;
+        // background-color: #222;
+        color: #fff; 
         display: flex;
         flex-direction: column;
         overflow-y: auto; // 允许垂直滚动
         overflow-x: hidden;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 
         // 隐藏滚动条
         scrollbar-width: thin; 
         scrollbar-color: transparent transparent; 
-
-        // /* 对于 Webkit 浏览器（Chrome, Safari等） */
-        // &::-webkit-scrollbar {
-        //     width: 8px; /* 滚动条宽度 */
-        // }
-        // &::-webkit-scrollbar-thumb {
-        //     background: transparent; /* 滚动条的颜色 */
-        //     border-radius: 10px; /* 滚动条的圆角 */
-        // }
-        // &::-webkit-scrollbar-track {
-        //     background: transparent; /* 滚动条背景 */
-        // }
-
+        
         .sidebar-header{
             padding: 20px;
             text-align: left;
@@ -234,10 +243,10 @@ const closeModal = () => {
         }
     }
     .main{
-        margin-left: 256px;
-        padding: 20px;
+        margin-left: 244px;
+        // padding: 20px;
         flex: 1;
-        background-color: #f4f4f4;
+        // background-color: #f4f4f4;
         overflow-y: auto;
         height: calc(100vh - 40px);
         box-sizing: border-box;
