@@ -140,11 +140,12 @@ const togglePause = () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    background-color: #222;
+    // background-color: #222;
     color: white;
     padding: 5px;
     height: 100px; /* 增加高度以容纳进度条和其他内容 */
     z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 
     .progress-bar {
         width: 100%;
@@ -178,7 +179,6 @@ const togglePause = () => {
                     .singer {
                         padding: 8px; 
                         font-size: 12px;
-                        color: #7d7192;
                     }
                 }
                 .icon-container {

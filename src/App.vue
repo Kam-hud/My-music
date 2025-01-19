@@ -131,7 +131,7 @@ onMounted(() => {
             <Setting :background-color="backgroundColor" @change-background="changeBackgroundColor"></Setting>
             <player></player>
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
-            <router-view></router-view>
+            <router-view style="padding: 20px;"></router-view>
         </div>
     </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PaintBrush from './PaintBrush.vue';
+import login from './login.vue';
 
 // 接收父组件传递的背景颜色
 const props = defineProps({
@@ -8,6 +9,7 @@ const props = defineProps({
 })
 
 const isShowBrush = ref(false)
+const isOpenLogin = ref(false)
 
 const goBack = () => { 
     window.history.back()
@@ -18,6 +20,10 @@ const goForward = () => {
 
 const openBrush = () => { 
     isShowBrush.value = !isShowBrush.value
+}
+
+const openLogin = () => { 
+    isOpenLogin.value = !isOpenLogin.value
 }
 </script>
 
@@ -37,7 +43,7 @@ const openBrush = () => {
                 </div>
             </div>
             <div class="navbar-right">
-                <button class="icon-button">
+                <button class="icon-button" @click="openLogin">
                     <font-awesome-icon icon="user-circle"/>
                 </button>
                 <button class="icon-button" @click="openBrush">
@@ -49,6 +55,7 @@ const openBrush = () => {
             </div>
         </div>
         <PaintBrush v-if="isShowBrush" @change-background="$emit('change-background', $event)"></PaintBrush>
+        <login v-if="isOpenLogin"></login>
     <!-- </div>    -->
 </template>
 
@@ -61,7 +68,6 @@ const openBrush = () => {
     // background-color: #222;
     color: white;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-
     .navbar-left {
         display: flex;
         align-items: center;

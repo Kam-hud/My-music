@@ -44,12 +44,13 @@ const showTheme = ref(true)
     font-family: Arial, sans-serif;
     background: #222;
     color: white;
-    z-index: 1000;
-    // max-width: 1200px;
+    max-width: 1252px;
+    max-height: 580px;
     width: 100%;
     height: 100%; 
     padding: 20px;
     margin: 0 auto;
+    border-radius: 8px;
     .navbar{
         display: flex;
         flex-direction: column;
