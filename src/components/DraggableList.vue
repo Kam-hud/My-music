@@ -8,10 +8,9 @@ const emit = defineEmits(['close','update-order']);
 const edits = ref([
     { id: 1, name: "我喜欢的音乐", icon: 'heart' },
     { id: 2, name: '最近播放', icon: 'play-circle' },
-    { id: 3, name: '我的播客', icon: 'podcast' },
-    { id: 4, name: '我的收藏', icon: 'heart' },
-    { id: 5, name: '下载管理', icon: 'download' },
-    { id: 6, name: '本地音乐', icon: 'hdd' },
+    { id: 3, name: '我的收藏', icon: 'heart' },
+    { id: 4, name: '下载管理', icon: 'download' },
+    { id: 5, name: '本地音乐', icon: 'hdd' },
 ])
 
 // 存储被拖动的项目

@@ -10,15 +10,12 @@ import Setting from './components/Setting.vue';
 const navItems = ref([
     { path: '/recommended', name: '推荐', icon: 'star' },
     { path: '/winnow', name: '精选', icon: 'gem' },
-    { path: '/podcast', name: '播客', icon: 'podcast' },
-    { path: '/roam', name: '漫游', icon: 'compass' },
     { path: '/dynamic', name: '动态', icon: 'bolt' }
 ]);
 // 存储从路由传递过来的值
 const myItems = ref([
     { path: '/likeMusic', name: '我喜欢的音乐', icon: 'heart' },
     { path: '/recentlyPlayed', name: '最近播放', icon: 'clock' },
-    { path: '/myPodcast', name: '我的播客', icon: 'podcast' },
     { path: '/myCollection', name: '我的收藏', icon: 'star', showMore: true },
     { path: '/download', name: '下载管理', icon: 'download', showMore: true },
     { path: '/localMusic', name: '本地音乐', icon: 'music', showMore: true },
@@ -129,7 +126,7 @@ onMounted(() => {
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
             <Setting :background-color="backgroundColor" @change-background="changeBackgroundColor"></Setting>
-            <player></player>
+            <!-- <player></player> -->
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
             <router-view style="padding: 20px;"></router-view>
         </div>
@@ -203,6 +200,7 @@ onMounted(() => {
                     margin-right: 10px;
                     opacity: 0;
                     transition: opacity 0.3s;
+                    cursor: pointer;
                 }
             }
 
@@ -244,9 +242,7 @@ onMounted(() => {
     }
     .main{
         margin-left: 244px;
-        // padding: 20px;
         flex: 1;
-        // background-color: #f4f4f4;
         overflow-y: auto;
         height: calc(100vh - 40px);
         box-sizing: border-box;

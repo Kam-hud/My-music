@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 
+// 定义可以发出的事件
+const emit = defineEmits(['user-logged-in']);
 const registeredUsers = ref([]) // 存储已注册用户的数据 
 const isRegistering = ref(false) // 控制登录和注册的状态
-const isLoggedIn = ref(false)
 
 // 登录
 const loginAccount =ref('')
@@ -32,7 +33,9 @@ const saveUserToLocalStorage = () => {
 const handleLogin = () => { 
     if (checkUserExists(loginAccount.value) && registeredUsers.value.find(user => user.account === loginAccount.value).password === loginPassword.value) { 
         alert("登录成功")
-        isLoggedIn.value = false
+        // loginAccount.value = ''
+        // loginPassword.value = ''
+        emit('user-logged-in', loginAccount.value)
     } else {
         alert('账号或密码错误');
     }
@@ -48,12 +51,13 @@ const handleRegister = () => {
         registeredUsers.value.push({ account: registerAccount.value, password: registerPassword.value });
         alert('注册成功！');
         saveUserToLocalStorage()
-        isRegistering.value = false;    
+        registerAccount.value = ''
+        registerPassword.value = ''  
+        isRegistering.value = false; // 返回登录界面
     } else {
         alert('账号已注册！');
     }
 };
-
 
 // 立即注册
 const goToRegister = () => { 
