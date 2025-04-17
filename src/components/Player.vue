@@ -1,36 +1,64 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 
+// 歌单
 const songList = ref([
     { id: 1, icon: 'heart' },
     { id: 2, icon: 'comment' },
     { id: 3, icon: 'share-alt' },
     { id: 4, icon: 'download' }
 ])
-
+// 当前歌曲
 const currentPosition = ref(0)
-const totalDuration = ref(240) // 假设总时长为240秒
-const volume = ref(50) // 初始音量
-const showVolumeControls = ref(false) //控制音量调节的显示
+// 总时长   
+const totalDuration = ref(0)
+// 音量
+const volume = ref(50)
+// 音量控制显示
+const showVolumeControls = ref(false)
+// 播放模式
 const playMode = ref('顺序')
-const showOptions = ref(false) // 控制播放列表选项的显示
-const showLyrics = ref(false) // 控制歌词的显示
-const isPlaying = ref(false) // 播放状态
+// 显示选项
+const showOptions = ref(false)
+// 显示歌词
+const showLyrics = ref(false)
 
-const seekSong = () => { 
-    console.log(`当前进度: ${currentPosition.value}`);
+// 当前歌曲
+const currentSong = inject('currentSong')
+// 音频
+const audio = inject('audio')
+// 播放上一首
+const playPrevious = inject('playPrevious')
+// 播放下一首
+const playNext = inject('playNext')
+// 切换播放
+const togglePlay = inject('togglePlay')
+
+// 更新进度条
+const updateProgress = () => {
+    // 更新当前歌曲进度
+    currentPosition.value = audio.value.currentTime
+    // 更新总时长
+    totalDuration.value = audio.value.duration
 }
 
+// 设置音量
 const changeVolume = (e) => { 
+    // 更新音量
     volume.value = e.target.value
-    console.log(`当前音量:${volume.value}`);
+    // 更新音频音量
+    audio.value.volume = volume.value / 100
 }
 
+// 切换音量控制显示
 const toggleVolumeControl = () => { 
+    // 切换音量控制显示
     showVolumeControls.value = !showVolumeControls.value
 }
 
+// 切换播放模式
 const togglePlayMode = () => { 
+    // 切换播放模式
     if (playMode.value === '顺序') {
         playMode.value = '单曲循环'
     } else if (playMode.value === '单曲循环') {
@@ -38,91 +66,128 @@ const togglePlayMode = () => {
     } else { 
         playMode.value = '顺序'
     }
-    console.log(`当前播放模式: ${playMode.value}`);   
 }
 
+// 格式化时间
 const formatTime = (time) => { 
+    // 格式化时间
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 }
 
+// 切换歌词显示
 const toggleLyrics = () => { 
     showLyrics.value = !showLyrics.value
-    console.log(`显示歌词:${showLyrics.value}`);
-    
 }
 
-const togglePause = () => { 
-    isPlaying.value = !isPlaying.value
-    console.log(`当前状态:${isPlaying ? '播放' : '暂停'}`);
+// 拖动进度条
+const seekSong = (e) => { 
+    // 拖动进度条
+    const time = e.target.value
+    // 更新音频进度
+    audio.value.currentTime = time
+    // 更新当前歌曲进度
+    currentPosition.value = time
 }
+
+// 监听音频事件
+onMounted(() => {
+    // 监听音频进度
+    audio.value.addEventListener('timeupdate', updateProgress)
+    // 监听音频加载元数据
+    audio.value.addEventListener('loadedmetadata', () => {
+        // 更新总时长
+        totalDuration.value = audio.value.duration
+    })
+})
+
+// 卸载组件
+onUnmounted(() => {
+    // 移除音频进度监听
+    audio.value.removeEventListener('timeupdate', updateProgress)
+})
 </script>
 
 <template>
     <div class="music-player">
-        <input type="range" min="0" v-model="currentPosition" @input="seekSong" class="progress-bar">
-
+        <!-- 进度条 -->
+        <input type="range" min="0" :max="totalDuration" v-model="currentPosition" @input="seekSong" class="progress-bar">
+        <!-- 播放器信息 -->
         <div class="player-info">
+            <!-- 歌曲信息 -->
             <div class="song-info">
-                <img src="@/assets/images/pig6.jpg" alt="Song cover" class="song-cover">
+                <!-- 歌曲封面 -->
+                <img :src="currentSong.cover" alt="Song cover" class="song-cover">
+                <!-- 歌曲详情 -->
                 <div class="song-details">
-                    <div class="text-info">
-                        <p class="song-name">单车</p>
-                        <p class="singer">-莫奕迅</p>
+                    <div class="text-info"> 
+                        <!-- 歌曲名称 -->
+                        <p class="song-name">{{ currentSong.title }}</p>
+                        <!-- 歌手 -->
+                        <p class="singer">-{{ currentSong.artist }}</p>
                     </div>
+                    <!-- 图标容器 -->
                     <div class="icon-container">
+                        <!-- 图标 -->
                         <p v-for="item in songList" :key="item.id">
                             <font-awesome-icon :icon="item.icon" style="margin-right: 10px;" />
                         </p>
                     </div> 
                 </div>
             </div>
+            <!-- 播放器控制 -->
             <div class="player-controls">
-                <!-- 歌曲的状态 -->
+                <!-- 切换播放模式 -->
                 <button @click="togglePlayMode">
                     <font-awesome-icon :icon="playMode === '顺序' ? 'sync' : playMode === '单曲循环' ? 'repeat' : 'random'" />
                 </button>
-                <!-- 下一首 -->
-                <button @click="prevSong">
+                <!-- 播放上一首 -->
+                <button @click="playPrevious">
                     <font-awesome-icon icon="fa-solid fa-step-backward" />
                 </button>
-                <!-- 暂停或播放 -->
-                <button @click="togglePause">
-                    <font-awesome-icon :icon="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'" />
+                <!-- 切换播放 -->
+                <button @click="togglePlay">
+                    <font-awesome-icon :icon="currentSong.isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'" />
                 </button>
-                <!-- 下一首 -->
-                <button @click="nextSong">
+                <!-- 播放下一首 -->
+                <button @click="playNext">
                     <font-awesome-icon icon="fa-solid fa-step-forward" />
                 </button>
+                <!-- 音量容器 -->
                 <div class="volume-container"> 
+                    <!-- 音量控制 -->
                     <div class="volume-control" @click="toggleVolumeControl">
                         <font-awesome-icon icon="fa-solid fa-volume-up" />
                     </div>
+                    <!-- 音量滑块 -->
                     <div class="volume-slider" v-if="showVolumeControls">
+                        <!-- 音量范围 -->
                         <input type="range" min="0" max="100" v-model="volume" @input="changeVolume" class="volume-range" />
+                        <!-- 音量百分比 -->
                         <span class="volume-percentage">{{ volume }}%</span>
                     </div>
                 </div>
-
             </div>
+            <!-- 播放器时间 -->
             <div class="player-time">
+                <!-- 时间显示 -->
                 <div class="time-display" @mouseover="showOptions = true" @mouseleave="showOptions = false">
+                    <!-- 时间显示 -->
                     <div class="time-display" v-if="!showOptions">
                         <span>{{ formatTime(currentPosition) }}</span> / 
                         <span>{{ formatTime(totalDuration) }}</span>
                     </div>
+                    <!-- 选项 -->
                     <div class="options" v-if="showOptions">
                         <p>倍速</p>
-                        <p>音质</p>
+                        <p>音质</p> 
                         <p>音效</p>
                     </div>
                 </div>
-
-                <!-- 歌词按钮 -->
+                <!-- 歌词 -->
                 <p @click="toggleLyrics" class="song-word">词</p>
-
-                <!-- 播放列表图标 -->
+                <!-- 歌单图标 -->
                 <div class="playlist-icon">
                     <font-awesome-icon icon="music" />
                 </div>

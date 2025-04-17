@@ -1,13 +1,29 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 
+// 用户名
 const username = ref('Kam')
-const playlists = ref([
-  { name: 'Playlist 1' },
-  { name: 'Playlist 2' },
-  { name: 'Playlist 3' },
-  { name: 'Playlist 4' },
-])
+
+// 歌单
+// const playlists = ref([
+//   { name: 'Playlist 1' },
+//   { name: 'Playlist 2' },
+//   { name: 'Playlist 3' },
+//   { name: 'Playlist 4' },
+// ])
+
+// 注入共享状态和方法
+// 当前歌曲
+const currentSong = inject('currentSong')   
+// 歌单
+const playlist = inject('playlist')
+// 播放歌曲
+const playSong = inject('playSong')
+
+// 处理歌曲点击
+const handleSongClick = (song) => {
+    playSong(song)
+}
 </script>
 
 <template>
@@ -18,48 +34,33 @@ const playlists = ref([
 
         <!-- 推荐卡片区域 -->
         <div class="recommendation-cards">
-        <div class="card">
-            <div class="card-image placeholder"></div>
-            <div class="card-content">
-                <h3>单车</h3>
-                <p>陈奕迅</p>
-                    <div class="card-actions">
-                        <button class="play-btn"><i class="fas fa-play"></i></button>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                        <button class="more-btn"><i class="fas fa-ellipsis-h"></i></button>
-                    </div>
+            <div v-for="song in playlist" :key="song.id" 
+                 class="card" 
+                 @click="handleSongClick(song)"
+                 :class="{ 'active': currentSong.id === song.id }">
+                <div class="card-image placeholder">
+                    <img :src="song.cover" alt="" class="card-logo">
+                </div>
+                <div class="card-content">
+                    <h3>{{ song.title }}</h3>
+                    <p>{{ song.artist }}</p>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-image placeholder"></div>
-            <div class="card-content">
-                <h3>每日30首</h3>
+        <!-- 歌单收藏区域 -->
+        <!-- <div class="playlist-section">
+            <h2 class="section-title">你的歌单宝藏库</h2>
+            <div class="playlist-grid">
+                <div v-for="(playlist, index) in playlists" :key="index" class="playlist-item">
+                    <div class="placeholder"></div>
+                </div>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-image placeholder"></div>
-            <div class="card-content">
-                <h3>杜比专区</h3>
-            </div>
-        </div>
+        </div> -->
     </div>
-
-    <!-- 歌单收藏区域 -->
-    <div class="playlist-section">
-        <h2 class="section-title">你的歌单宝藏库</h2>
-        <div class="playlist-grid">
-            <div v-for="(playlist, index) in playlists" :key="index" class="playlist-item">
-                <div class="placeholder"></div>
-            </div>
-        </div>
-    </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>
-// Variables
 $primary-bg: #0a0a1a;
 $card-bg: #1a1a2e;
 $button-bg: #2a2a3e;
@@ -112,11 +113,18 @@ $text-secondary: rgba(255, 255, 255, 0.9);
 
   .card {
     @include card-base;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 
     &-image {
       &.placeholder {
         @include placeholder;
         height: 200px;
+      }
+      .card-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover
       }
     }
 
@@ -143,6 +151,14 @@ $text-secondary: rgba(255, 255, 255, 0.9);
           background: lighten($button-bg, 10%);
         }
       }
+    }
+
+    &:hover {
+      transform: scale(1.02);
+    }
+
+    &.active {
+      border: 2px solid #e8b9aa;
     }
   }
 }

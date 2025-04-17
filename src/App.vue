@@ -1,10 +1,125 @@
 <script setup>
-import { onMounted, ref, watch} from 'vue'
+import { onMounted, ref, watch, provide } from 'vue'
 // 引入vue-router的useRoute方法
 import { useRoute } from 'vue-router'
 import draggableList from '@/components/DraggableList.vue'
 import player from './components/Player.vue';
 import Setting from './components/Setting.vue';
+// 导入图片
+import coverImage from '@/assets/images/pig5.jpg'
+
+// 播放列表数据
+const playlist = ref([
+    {
+        id: 1,
+        title: '跳楼机',
+        artist: 'LBI利比',
+        cover: coverImage,
+        url: '/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg'
+    },
+    {
+        id: 2,
+        title: '像晴天像雨天',
+        artist: '汪苏泷',
+        cover: coverImage,
+        url: '/src/assets/music/汪苏泷 - 像晴天像雨天.flac'
+    },
+    {
+        id: 3,
+        title: '第一人称',
+        artist: '李润祺',
+        cover: coverImage,
+        url: '/src/assets/music/第一人称.mp3'  
+    }
+])
+
+// 当前播放的歌曲状态
+const currentSong = ref({
+    id: null,
+    title: '',
+    artist: '',
+    cover: '',
+    url: '',
+    isPlaying: false
+})
+
+// 音频对象
+const audio = ref(new Audio())
+
+// 播放上一首
+const playPrevious = () => {
+    // 获取当前歌曲的索引
+    const currentIndex = playlist.value.findIndex(song => song.id === currentSong.value.id)
+    // 如果当前歌曲不是第一首，则播放上一首
+    if (currentIndex > 0) {
+        // 获取上一首歌曲
+        const prevSong = playlist.value[currentIndex - 1]
+        // 更新当前歌曲状态
+        currentSong.value = { ...prevSong, isPlaying: true }
+        // 更新音频源
+        audio.value.src = prevSong.url
+        // 播放音频
+        audio.value.play()
+    }
+}
+
+// 播放下一首
+const playNext = () => {
+    // 获取当前歌曲的索引
+    const currentIndex = playlist.value.findIndex(song => song.id === currentSong.value.id)
+    // 如果当前歌曲不是最后一首，则播放下一首
+    if (currentIndex < playlist.value.length - 1) {
+        // 获取下一首歌曲
+        const nextSong = playlist.value[currentIndex + 1]
+        // 更新当前歌曲状态
+        currentSong.value = { ...nextSong, isPlaying: true }
+        // 更新音频源
+        audio.value.src = nextSong.url
+        // 播放音频
+        audio.value.play()
+    }
+}
+
+// 播放指定歌曲
+const playSong = (song) => {    
+    // 更新当前歌曲状态
+    currentSong.value = { ...song, isPlaying: true }
+    // 更新音频源
+    audio.value.src = song.url
+    // 播放音频
+    audio.value.play()
+}
+
+// 暂停/播放切换
+const togglePlay = () => {
+    // 如果当前歌曲正在播放，则暂停
+    if (currentSong.value.isPlaying) {
+        audio.value.pause()
+    } else {
+        // 如果当前歌曲未播放，则播放
+        audio.value.play()
+    }
+    // 更新当前歌曲状态
+    currentSong.value.isPlaying = !currentSong.value.isPlaying
+}
+
+// 监听音频事件     
+onMounted(() => {
+    // 监听音频结束事件
+    audio.value.addEventListener('ended', () => {
+        // 歌曲播放结束时自动播放下一首
+        playNext()
+    })
+})
+
+// 提供状态和方法给子组件
+provide('currentSong', currentSong)
+provide('playlist', playlist)
+provide('playPrevious', playPrevious)
+provide('playNext', playNext)
+provide('playSong', playSong)
+provide('togglePlay', togglePlay)
+provide('audio', audio)
 
 // 存储从路由传递过来的导航项
 const navItems = ref([
@@ -126,9 +241,9 @@ onMounted(() => {
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
             <Setting :background-color="backgroundColor" @change-background="changeBackgroundColor"></Setting>
-            <!-- <player></player> -->
+            <player></player>
             <draggableList v-if="isShowModal" @update-order="handleUpdateOrder"  @click="closeModal"/>
-            <router-view style="padding: 20px;"></router-view>
+            <router-view style="padding: 20px; height: 100%;"></router-view>
         </div>
     </div>
 </template>
@@ -244,8 +359,12 @@ onMounted(() => {
         margin-left: 244px;
         flex: 1;
         overflow-y: auto;
-        height: calc(100vh - 40px);
+        height: calc(100vh - 110px);
         box-sizing: border-box;
+         /* 隐藏所有滚动条 */
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     @media screen and (max-width: 768px){
