@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, provide } from 'vue'
+import { onMounted, ref, watch, provide, computed } from 'vue'
 // 引入vue-router的useRoute方法
 import { useRoute } from 'vue-router'
 import draggableList from '@/components/DraggableList.vue'
@@ -112,6 +112,64 @@ onMounted(() => {
     })
 })
 
+// 存储背景颜色
+const backgroundColor = ref('#f4f4f4')
+
+// 计算文本颜色
+const textColor = computed(() => {
+    // 将背景色转换为RGB值
+    const hex = backgroundColor.value.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // 计算亮度
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    // 根据亮度返回黑色或白色
+    return brightness > 128 ? '#000000' : '#ffffff';
+})
+
+// 更新背景颜色
+const changeBackgroundColor = (newColor) => { 
+    backgroundColor.value = newColor //更新背景颜色
+    console.log("Updated Background Color:", newColor);
+}
+
+// 监视颜色变化，并将其保存到 localStorage
+watch(backgroundColor, (newColor) => { 
+    localStorage.setItem('savedColor',newColor)
+})
+
+// 保存当前歌曲到localStorage
+const saveCurrentSong = () => {
+    localStorage.setItem('currentSong', JSON.stringify(currentSong.value))
+}
+
+// 从localStorage加载当前歌曲
+const loadCurrentSong = () => {
+    const savedSong = localStorage.getItem('currentSong')
+    if (savedSong) {
+        const parsedSong = JSON.parse(savedSong)
+        currentSong.value = { ...parsedSong, isPlaying: false }
+        audio.value.src = parsedSong.url
+    }
+}
+
+// 监听当前歌曲变化
+watch(currentSong, () => {
+    saveCurrentSong()
+}, { deep: true })
+
+// 在组件挂载时加载保存的歌曲和颜色
+onMounted(() => { 
+    const savedColor = localStorage.getItem('savedColor');
+    if (savedColor) { 
+        backgroundColor.value = savedColor
+    }
+    loadCurrentSong()
+})
+
 // 提供状态和方法给子组件
 provide('currentSong', currentSong)
 provide('playlist', playlist)
@@ -120,6 +178,7 @@ provide('playNext', playNext)
 provide('playSong', playSong)
 provide('togglePlay', togglePlay)
 provide('audio', audio)
+provide('textColor', textColor)
 
 // 存储从路由传递过来的导航项
 const navItems = ref([
@@ -144,8 +203,6 @@ const route = useRoute()
 const edit = ref(false)
 // 控制列表框的显示状态
 const isShowModal = ref(false)
-// 存储背景颜色
-const backgroundColor = ref('#f4f4f4')
 
 // 切换"更多"按钮的显示状态
 const toggleShowMore = () => {
@@ -157,7 +214,7 @@ const isActive = (path) => {
     return  route.path === path
 }
 
-// 更新用户列表的顺序
+// 更新用户列表的顺序,左侧的侧边栏
 function handleUpdateOrder(newOrder) { 
     // 创建一个Map对象，用于存储列表原始的数据
     const itemsMap = new Map()
@@ -186,28 +243,10 @@ const openModal = () => {
 const closeModal = () => { 
     isShowModal.value = false;
 }
-
-// 更新背景颜色
-const changeBackgroundColor = (newColor) => { 
-    backgroundColor.value = newColor //更新背景颜色
-    console.log("Updated Background Color:", newColor);
-}
-
-// 监视颜色变化，并将其保存到 localStorage
-watch(backgroundColor, (newColor) => { 
-    localStorage.setItem('savedColor',newColor)
-})
-// 在组件挂载时，尝试从 localStorage 中加载保存的颜色
-onMounted(() => { 
-    const savedColor = localStorage.getItem('savedColor');
-    if (savedColor) { 
-        backgroundColor.value = savedColor
-    }
-})
 </script>
 
 <template>
-    <div :style="{ backgroundColor: backgroundColor}" id="app">
+    <div :style="{ backgroundColor: backgroundColor, color: textColor }" id="app">
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="@/assets/images/music_logo.png" alt="" class="music-logo">
@@ -252,7 +291,6 @@ onMounted(() => {
 #app{
     display: flex;
     height: 100vh!important;
-    // background-color: #f5f5f5;
 
     .sidebar{
         position: fixed;
@@ -260,8 +298,7 @@ onMounted(() => {
         left: 0;
         width: 244px;
         height: 100%;
-        // background-color: #222;
-        color: #fff; 
+        // color: #fff; 
         display: flex;
         flex-direction: column;
         overflow-y: auto; // 允许垂直滚动
@@ -326,7 +363,7 @@ onMounted(() => {
 
             .sidebar-item{
                 width: 180px;
-                color: #a9abb1;
+                // color: #a9abb1;
                 padding: 8px;
                 text-decoration: none;
                 font-size: 16px;
@@ -338,7 +375,7 @@ onMounted(() => {
                 }
 
                 &.active{
-                    color: #fff;
+                    // color: #fff;
                     background-color: #e8b9aa;
                     border-radius: 5px;
                 }

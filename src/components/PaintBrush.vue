@@ -7,7 +7,7 @@ const changeColor = (color) => {
   // 发出事件，将颜色传递给父组件
   emit('change-background', color); // 触发事件
 }
-
+// 是否显示主题
 const showTheme = ref(true)
 
 </script>

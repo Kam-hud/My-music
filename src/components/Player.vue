@@ -172,18 +172,12 @@ onUnmounted(() => {
             <!-- 播放器时间 -->
             <div class="player-time">
                 <!-- 时间显示 -->
-                <div class="time-display" @mouseover="showOptions = true" @mouseleave="showOptions = false">
+                <div class="time-display" >
                     <!-- 时间显示 -->
-                    <div class="time-display" v-if="!showOptions">
+                    <div class="time-display">
                         <span>{{ formatTime(currentPosition) }}</span> / 
                         <span>{{ formatTime(totalDuration) }}</span>
-                    </div>
-                    <!-- 选项 -->
-                    <div class="options" v-if="showOptions">
-                        <p>倍速</p>
-                        <p>音质</p> 
-                        <p>音效</p>
-                    </div>
+                    </div> 
                 </div>
                 <!-- 歌词 -->
                 <p @click="toggleLyrics" class="song-word">词</p>
