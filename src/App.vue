@@ -3,8 +3,8 @@ import { onMounted, ref, watch, provide } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import MusicPlayer from '@/components/MusicPlayer.vue'
 import SettingPanel from '@/components/SettingPanel.vue'
-import { useBackgroundColor } from '@/composables/useBackgroundColor'
-import { useMusicPlayer } from '@/composables/useMusicPlayer'
+import { useBackgroundColor } from '@/Composables/useBackgroundColor'
+import { useMusicPlayer } from '@/Composables/useMusicPlayer'
 
 // // 背景颜色逻辑
 const { backgroundColor, textColor, changeBackgroundColor } = useBackgroundColor()
