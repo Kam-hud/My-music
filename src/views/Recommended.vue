@@ -1,6 +1,5 @@
 <script setup>
 import { ref, inject } from 'vue'
-
 // 用户名
 const username = ref('Kam')
 
@@ -47,16 +46,6 @@ const handleSongClick = (song) => {
                 </div>
             </div>
         </div>
-
-        <!-- 歌单收藏区域 -->
-        <!-- <div class="playlist-section">
-            <h2 class="section-title">你的歌单宝藏库</h2>
-            <div class="playlist-grid">
-                <div v-for="(playlist, index) in playlists" :key="index" class="playlist-item">
-                    <div class="placeholder"></div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -67,6 +56,8 @@ $button-bg: #2a2a3e;
 $placeholder-bg: #2a2a4e;
 $text-color: white;
 $text-secondary: rgba(255, 255, 255, 0.9);
+
+@use "sass:color";
 
 // Mixins
 @mixin flex-center {
@@ -148,7 +139,7 @@ $text-secondary: rgba(255, 255, 255, 0.9);
         transition: all 0.3s ease;
 
         &:hover {
-          background: lighten($button-bg, 10%);
+           background: color.adjust($button-bg, $lightness: 10%);
         }
       }
     }
