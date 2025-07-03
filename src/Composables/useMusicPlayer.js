@@ -3,8 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import coverImage from '@/assets/images/pig5.jpg'
 
 export function useMusicPlayer() {
-    // 播放列表数据
-    const playlist = ref([
+    const recommendedSongs = ref([
         {
             id: 1,
             title: '跳楼机',
@@ -21,12 +20,28 @@ export function useMusicPlayer() {
         },
         {
             id: 3,
+            title: '单车',
+            artist: '陈奕迅',
+            cover: coverImage,
+            url: '/src/assets/music/陈奕迅-单车.mp3'
+        },
+        {
+            id: 4,
+            title: '零距离的思念',
+            artist: 'TINY7',
+            cover: coverImage,
+            url: '/src/assets/music/TINY7 - 零距离的思念.flac'
+        },
+        {
+            id: 5,
             title: '第一人称',
             artist: '李润祺',
             cover: coverImage,
             url: '/src/assets/music/第一人称.mp3'
-        }
+        },
     ])
+    // 播放列表数据
+    const playlist = ref([])
 
     // 当前播放的歌曲状态
     const currentSong = ref({
@@ -93,6 +108,15 @@ export function useMusicPlayer() {
         currentSong.value.isPlaying = !currentSong.value.isPlaying
     }
 
+    // 添加歌曲到播放列表
+    const addSongToPlaylist = (song) => {
+        // 检查歌曲是否已经存在
+        const isSongExist = playlist.value.some(item => item.id === song.id)
+        if (!isSongExist) {
+            playlist.value.push(song)
+        }
+    }
+
     // 监听音频事件
     onMounted(() => {
         audio.value.addEventListener('ended', () => {
@@ -126,12 +150,14 @@ export function useMusicPlayer() {
     })
 
     return {
+        recommendedSongs,
         playlist,
         currentSong,
         audio,
         playPrevious,
         playNext,
         playSong,
-        togglePlay
+        togglePlay,
+        addSongToPlaylist,
     }
 }

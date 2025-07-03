@@ -3,24 +3,19 @@ import { ref, inject } from 'vue'
 // 用户名
 const username = ref('Kam')
 
-// 歌单
-// const playlists = ref([
-//   { name: 'Playlist 1' },
-//   { name: 'Playlist 2' },
-//   { name: 'Playlist 3' },
-//   { name: 'Playlist 4' },
-// ])
-
 // 注入共享状态和方法
 // 当前歌曲
-const currentSong = inject('currentSong')   
+const currentSong = inject('currentSong')
 // 歌单
-const playlist = inject('playlist')
+const recommendedSongs = inject('recommendedSongs')
 // 播放歌曲
 const playSong = inject('playSong')
+// 添加歌曲到播放列表
+const addSongToPlaylist = inject('addSongToPlaylist')
 
 // 处理歌曲点击
 const handleSongClick = (song) => {
+    addSongToPlaylist(song)
     playSong(song)
 }
 </script>
@@ -33,10 +28,8 @@ const handleSongClick = (song) => {
 
         <!-- 推荐卡片区域 -->
         <div class="recommendation-cards">
-            <div v-for="song in playlist" :key="song.id" 
-                 class="card" 
-                 @click="handleSongClick(song)"
-                 :class="{ 'active': currentSong.id === song.id }">
+            <div v-for="song in recommendedSongs" :key="song.id" class="card" @click="handleSongClick(song)"
+                :class="{ 'active': currentSong.id === song.id }">
                 <div class="card-image placeholder">
                     <img :src="song.cover" alt="" class="card-logo">
                 </div>
@@ -61,116 +54,117 @@ $text-secondary: rgba(255, 255, 255, 0.9);
 
 // Mixins
 @mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @mixin card-base {
-  background: $card-bg;
-  border-radius: 12px;
-  overflow: hidden;
+    background: $card-bg;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 @mixin placeholder {
-  background: $placeholder-bg;
-  border-radius: 8px;
-  width: 100%;
+    background: $placeholder-bg;
+    border-radius: 8px;
+    width: 100%;
 }
 
 .recommended {
-  padding: 20px;
-  background: $primary-bg;
-  min-height: 100vh;
-  color: $text-color;
+    padding: 20px;
+    background: $primary-bg;
+    min-height: 100vh;
+    color: $text-color;
 
-  .title {
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
+    .title {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
 
-  .subtitle {
-    font-size: 24px;
-    margin-bottom: 24px;
-    color: $text-secondary;
-  }
+    .subtitle {
+        font-size: 24px;
+        margin-bottom: 24px;
+        color: $text-secondary;
+    }
 }
 
 .recommendation-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
 
-  .card {
-    @include card-base;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &-image {
-      &.placeholder {
-        @include placeholder;
-        height: 200px;
-      }
-      .card-logo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover
-      }
-    }
-
-    &-content {
-      padding: 16px;
-    }
-
-    &-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 12px;
-
-      button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
-        background: $button-bg;
-        color: $text-color;
+    .card {
+        @include card-base;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: transform 0.2s ease;
+
+        &-image {
+            &.placeholder {
+                @include placeholder;
+                height: 200px;
+            }
+
+            .card-logo {
+                width: 100%;
+                height: 100%;
+                object-fit: cover
+            }
+        }
+
+        &-content {
+            padding: 16px;
+        }
+
+        &-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+
+            button {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: none;
+                background: $button-bg;
+                color: $text-color;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: color.adjust($button-bg, $lightness: 10%);
+                }
+            }
+        }
 
         &:hover {
-           background: color.adjust($button-bg, $lightness: 10%);
+            transform: scale(1.02);
         }
-      }
-    }
 
-    &:hover {
-      transform: scale(1.02);
+        &.active {
+            border: 2px solid #e8b9aa;
+        }
     }
-
-    &.active {
-      border: 2px solid #e8b9aa;
-    }
-  }
 }
 
 .playlist-section {
-  .section-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .playlist-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-
-    .playlist-item {
-      .placeholder {
-        @include placeholder;
-        aspect-ratio: 1;
-      }
+    .section-title {
+        font-size: 24px;
+        margin-bottom: 20px;
     }
-  }
+
+    .playlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+
+        .playlist-item {
+            .placeholder {
+                @include placeholder;
+                aspect-ratio: 1;
+            }
+        }
+    }
 }
 </style>

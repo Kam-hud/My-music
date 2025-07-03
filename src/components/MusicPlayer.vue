@@ -103,6 +103,36 @@ onMounted(() => {
     audio.value.volume = volume.value / 100
 })
 
+// 添加播放面板的状态
+const showPlaylistPanel = ref(false)
+
+// 播放列表的显示和隐藏
+const togglePlaylistPanel = () => {
+    showPlaylistPanel.value = !showPlaylistPanel.value
+}
+
+// 播放列表中删除歌曲
+const removeFromPlaylist = (songId) => {
+    const index = playlist.value.findIndex(song => song.id === songId)
+    if (index !== -1) {
+        // 检查删除的是不是当前播放的歌曲
+        const isCurrentSong = currentSong.value.id === songId
+        // 从播放列表中删除歌曲
+        playlist.value.splice(index, 1)
+        // 如果删除的是当前播放的歌曲
+        if (isCurrentSong) {
+            if (playlist.value.length > 0) {
+                // 如果还有其他歌曲，播放下一首
+                const nextIndex = index < playlist.value.length ? index : 0
+                playSong(playlist.value[nextIndex])
+            } else {
+                currentSong.value = { id: null, title: '', artist: '', cover: '', isPlaying: false } // 清空当前歌曲
+                audio.value.pause() // 停止播放
+            }
+        }
+    }
+}
+
 // 卸载组件
 onUnmounted(() => {
     audio.value.removeEventListener('timeupdate', updateProgress)
@@ -178,8 +208,10 @@ onUnmounted(() => {
                     <font-awesome-icon icon="music" />
                 </button>
 
-                <button class="playlist-btn" title="播放列表">
+                <button class="playlist-btn" :class="{ active: showPlaylistPanel }" @click="togglePlaylistPanel"
+                    title="播放列表">
                     <font-awesome-icon icon="bars" />
+                    <span class="badge" v-if="playlist.length > 0">{{ playlist.length }}</span>
                 </button>
             </div>
         </div>
@@ -196,6 +228,38 @@ onUnmounted(() => {
                 <p>这里是歌词内容...</p>
                 <p>当前播放的歌词行会高亮显示</p>
                 <p>支持滚动和同步显示</p>
+            </div>
+        </div>
+
+        <!-- 播放列表 -->
+        <div v-if="showPlaylistPanel" class="playlist-panel">
+            <div class="playlist-header">
+                <h3>播放列表({{ playlist.length }})</h3>
+                <button @click="togglePlaylistPanel" class="close-btn">
+                    <font-awesome-icon icon="times" />
+                </button>
+            </div>
+            <div class="playlist-content">
+                <div v-if="playlist.length === 0" class="empty-playlist">
+                    <font-awesome-icon icon="music" size="3x" />
+                    <p>播放列表为空</p>
+                </div>
+                <div v-else class="playlist-items">
+                    <div v-for="(song, index) in playlist" :key="song.id" class="playlist-item"
+                        :class="{ active: currentSong.id === song.id }" @click="playSong(song)">
+                        <div class="item-index">{{ index + 1 }}</div>
+                        <div class="item-cover">
+                            <img :src="song.cover" alt="专辑封面">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">{{ song.title }}</div>
+                            <div class="item-artist">{{ song.artist }}</div>
+                        </div>
+                        <button class="item-remove" @click.stop="removeFromPlaylist(song.id)" title="移除">
+                            <font-awesome-icon icon="times" />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -543,6 +607,184 @@ onUnmounted(() => {
             }
         }
     }
+
+    .playlist-panel {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        width: 350px;
+        max-height: 400px;
+        background: rgba(25, 25, 35, 0.98);
+        border-radius: 10px 0 0 10px;
+        box-shadow: -5px -5px 15px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        z-index: 1001;
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(40, 40, 50, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+            h3 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .close-btn {
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                cursor: pointer;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                }
+            }
+        }
+
+        .playlist-content {
+            flex: 1;
+            overflow-y: auto;
+
+            .empty-playlist {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 20px;
+                color: rgba(255, 255, 255, 0.5);
+
+                p {
+                    margin-top: 15px;
+                    font-size: 14px;
+                }
+            }
+
+            .playlist-items {
+                .playlist-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                    cursor: pointer;
+                    transition: background 0.2s;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.05);
+
+                        .item-remove {
+                            opacity: 1;
+                        }
+                    }
+
+                    &.current {
+                        background: rgba(232, 185, 170, 0.1);
+
+                        .item-title {
+                            color: #e8b9aa;
+                        }
+                    }
+
+                    .item-index {
+                        width: 25px;
+                        font-size: 14px;
+                        opacity: 0.7;
+                        text-align: center;
+                    }
+
+                    .item-cover {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 5px;
+                        overflow: hidden;
+                        margin-right: 15px;
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                    }
+
+                    .item-info {
+                        flex: 1;
+                        min-width: 0;
+
+                        .item-title {
+                            font-size: 14px;
+                            font-weight: 500;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+
+                        .item-artist {
+                            font-size: 12px;
+                            opacity: 0.7;
+                            margin-top: 3px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+
+                    .item-remove {
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.5);
+                        cursor: pointer;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.2s, background 0.2s;
+
+                        &:hover {
+                            background: rgba(255, 0, 0, 0.2);
+                            color: #ff6b6b;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 在播放列表按钮上添加徽章样式
+    .playlist-btn {
+        position: relative;
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e8b9aa;
+            color: #0a0a1a;
+            font-size: 10px;
+            font-weight: bold;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
 }
 
 @media screen and (max-width: 1200px) {
@@ -595,6 +837,24 @@ onUnmounted(() => {
                     transform: none;
                 }
             }
+        }
+
+        .playlist-panel {
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+            max-height: 50vh;
+
+            .playlist-header {
+                padding: 12px 15px;
+            }
+        }
+
+        .music-player .player-content .player-actions .playlist-btn .badge {
+            top: -3px;
+            right: -3px;
+            width: 14px;
+            height: 14px;
+            font-size: 9px;
         }
     }
 }

@@ -10,11 +10,12 @@ import { useMusicPlayer } from '@/Composables/useMusicPlayer'
 const { backgroundColor, textColor, changeBackgroundColor } = useBackgroundColor()
 
 // 音乐播放器逻辑
-const { playlist, currentSong, audio, playPrevious, playNext, playSong, togglePlay } = useMusicPlayer()
+const { recommendedSongs, playlist, currentSong, audio, playPrevious, playNext, playSong, togglePlay, addSongToPlaylist } = useMusicPlayer()
 
 
 // 提供状态和方法给子组件
 provide('currentSong', currentSong)
+provide('recommendedSongs', recommendedSongs)
 provide('playlist', playlist)
 provide('playPrevious', playPrevious)
 provide('playNext', playNext)
@@ -22,6 +23,7 @@ provide('playSong', playSong)
 provide('togglePlay', togglePlay)
 provide('audio', audio)
 provide('textColor', textColor)
+provide('addSongToPlaylist', addSongToPlaylist)
 </script>
 
 <template>
