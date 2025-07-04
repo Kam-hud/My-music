@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref, watch, provide } from 'vue'
+import { provide } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import MusicPlayer from '@/components/MusicPlayer.vue'
 import SettingPanel from '@/components/SettingPanel.vue'
 import { useBackgroundColor } from '@/Composables/useBackgroundColor'
 import { useMusicPlayer } from '@/Composables/useMusicPlayer'
+import Setting from '@/components/Setting.vue'
 
 // // 背景颜色逻辑
 const { backgroundColor, textColor, changeBackgroundColor } = useBackgroundColor()
@@ -24,6 +25,7 @@ provide('togglePlay', togglePlay)
 provide('audio', audio)
 provide('textColor', textColor)
 provide('addSongToPlaylist', addSongToPlaylist)
+
 </script>
 
 <template>
@@ -31,6 +33,7 @@ provide('addSongToPlaylist', addSongToPlaylist)
         <Sidebar :background-color="backgroundColor" :text-color="textColor" />
         <!-- 路由出口 → 匹配的组件所展示的位置  -->
         <div class="main">
+            <Setting />
             <SettingPanel :background-color="backgroundColor" @change-background="changeBackgroundColor" />
             <MusicPlayer />
             <router-view style="padding: 20px; height: 100%;"></router-view>
@@ -41,16 +44,15 @@ provide('addSongToPlaylist', addSongToPlaylist)
 <style lang="scss" scoped>
 #app {
     display: flex;
-    height: 100vh !important;
+    height: 100vh;
 }
 
 .main {
     margin-left: 244px;
     flex: 1;
     overflow-y: auto;
-    height: calc(100vh - 110px);
+    height: calc(100vh - 90px);
     box-sizing: border-box;
-
     /* 隐藏所有滚动条 */
     &::-webkit-scrollbar {
         display: none;

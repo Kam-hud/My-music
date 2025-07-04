@@ -198,7 +198,7 @@ onUnmounted(() => {
                         <font-awesome-icon
                             :icon="volume > 50 ? 'volume-up' : volume > 0 ? 'volume-down' : 'volume-mute'" />
                     </button>
-                    <div v-show="showVolumeControls || isHovering" class="volume-slider">
+                    <div v-show="showVolumeControls" class="volume-slider">
                         <input type="range" min="0" max="100" v-model="volume" @input="changeVolume"
                             class="volume-range" />
                     </div>

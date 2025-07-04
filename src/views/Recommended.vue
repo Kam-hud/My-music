@@ -49,6 +49,7 @@ $button-bg: #2a2a3e;
 $placeholder-bg: #2a2a4e;
 $text-color: white;
 $text-secondary: rgba(255, 255, 255, 0.9);
+$border-color: rgba(255, 255, 255, 0.1);
 
 @use "sass:color";
 
@@ -72,10 +73,36 @@ $text-secondary: rgba(255, 255, 255, 0.9);
 }
 
 .recommended {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    background: $primary-bg;
-    min-height: 100vh;
-    color: $text-color;
+    background-color: $primary-bg;
+    /* 调整高度计算方式 */
+    height: calc(100vh - 90px); 
+    border-radius: 8px;
+    border: 1px solid $border-color; 
+    box-sizing: border-box; 
+    overflow: auto; 
+
+    /* 自定义滚动条样式 */
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
 
     .title {
         font-size: 32px;
@@ -87,84 +114,66 @@ $text-secondary: rgba(255, 255, 255, 0.9);
         margin-bottom: 24px;
         color: $text-secondary;
     }
-}
 
-.recommendation-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+    .recommendation-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+        padding-bottom: 120px;
 
-    .card {
-        @include card-base;
-        cursor: pointer;
-        transition: transform 0.2s ease;
+        .card {
+            @include card-base;
+            cursor: pointer;
+            transition: transform 0.2s ease;
 
-        &-image {
-            &.placeholder {
-                @include placeholder;
-                height: 200px;
-            }
+            &-image {
+                &.placeholder {
+                    @include placeholder;
+                    height: 200px;
+                }
 
-            .card-logo {
-                width: 100%;
-                height: 100%;
-                object-fit: cover
-            }
-        }
-
-        &-content {
-            padding: 16px;
-        }
-
-        &-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-
-            button {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                border: none;
-                background: $button-bg;
-                color: $text-color;
-                cursor: pointer;
-                transition: all 0.3s ease;
-
-                &:hover {
-                    background: color.adjust($button-bg, $lightness: 10%);
+                .card-logo {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover
                 }
             }
-        }
 
-        &:hover {
-            transform: scale(1.02);
-        }
+            &-content {
+                padding: 16px;
+            }
 
-        &.active {
-            border: 2px solid #e8b9aa;
-        }
-    }
-}
+            &-actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 12px;
 
-.playlist-section {
-    .section-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
+                button {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    border: none;
+                    background: $button-bg;
+                    color: $text-color;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
 
-    .playlist-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 16px;
+                    &:hover {
+                        background: color.adjust($button-bg, $lightness: 10%);
+                    }
+                }
+            }
 
-        .playlist-item {
-            .placeholder {
-                @include placeholder;
-                aspect-ratio: 1;
+            &:hover {
+                transform: scale(1.02);
+            }
+
+            &.active {
+                border: 2px solid #e8b9aa;
             }
         }
     }
+
 }
 </style>
