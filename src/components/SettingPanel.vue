@@ -1,30 +1,41 @@
 <!--  -->
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const emit = defineEmits(['change-background'])
 
 // 预设颜色
 const presetColors = [
-    '#FF6347', // Tomato
-    '#32CD32', // LimeGreen
-    '#FFFF00', // Yellow
-    '#1E90FF', // DodgerBlue
-    '#9370DB', // MediumPurple
-    '#FF69B4', // HotPink
-    '#FFA500', // Orange
-    '#00CED1', // DarkTurquoise
+    '#0a0a1a',
+    '#ffffff',
+    '#1a1a2e',
+    '#16213e',
+    '#1E90FF',
+    '#9370DB',
+    '#FF69B4',
+    '#FFA500',
+    '#00CED1',
 ]
 
 // 当前选择的颜色
-const selectedColor = ref('#FF6347')
+const selectedColor = ref(null)
 
 // 更新背景颜色
 const updateBackground = (color) => {
     selectedColor.value = color
     emit('change-background', color)
+    localStorage.setItem('selectedColor', color)
 }
+
+// 在组件挂载时检查是否有保存的颜色
+onMounted(() => {
+    const savedColor = localStorage.getItem('selectedColor')
+    if (savedColor) {
+        selectedColor.value = savedColor
+        emit('change-background', savedColor)
+    }
+})
 </script>
 
 <template>

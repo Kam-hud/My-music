@@ -3,43 +3,132 @@ import { ref, onMounted, watch } from 'vue'
 import coverImage from '@/assets/images/pig5.jpg'
 
 export function useMusicPlayer() {
-    const recommendedSongs = ref([
+    const recommendedPlaylists = ref([
         {
             id: 1,
-            title: '跳楼机',
-            artist: 'LBI利比',
+            name: '每日推荐 | 从「我不爱一直想你」听起',
             cover: coverImage,
-            url: '/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg'
+            description: '精选每日推荐歌曲,开启美好一天',
+            songs: [
+                {
+                    id: 101,
+                    title: '跳楼机',
+                    artist: 'LBI利比',
+                    cover: coverImage,
+                    url: '/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg'
+                },
+                {
+                    id: 102,
+                    title: '像晴天像雨天',
+                    artist: '汪苏泷',
+                    cover: coverImage,
+                    url: '/src/assets/music/汪苏泷 - 像晴天像雨天.flac'
+                }
+            ]
         },
         {
             id: 2,
-            title: '像晴天像雨天',
-            artist: '汪苏泷',
+            name: '私人雷达',
             cover: coverImage,
-            url: '/src/assets/music/汪苏泷 - 像晴天像雨天.flac'
+            description: '私人雷达，发现更多好音乐',
+            songs: [
+                {
+                    id: 201,
+                    title: '热浪与海风',
+                    artist: '夏日乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
+                },
+                {
+                    id: 202,
+                    title: '夏日回忆',
+                    artist: '海岸线乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
+                }
+            ]
         },
         {
             id: 3,
-            title: '单车',
-            artist: '陈奕迅',
+            name: '私人雷达',
             cover: coverImage,
-            url: '/src/assets/music/陈奕迅-单车.mp3'
+            description: '私人雷达，发现更多好音乐',
+            songs: [
+                {
+                    id: 201,
+                    title: '热浪与海风',
+                    artist: '夏日乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
+                },
+                {
+                    id: 202,
+                    title: '夏日回忆',
+                    artist: '海岸线乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
+                }
+            ]
         },
         {
             id: 4,
-            title: '零距离的思念',
-            artist: 'TINY7',
+            name: '私人雷达',
             cover: coverImage,
-            url: '/src/assets/music/TINY7 - 零距离的思念.flac'
+            description: '私人雷达，发现更多好音乐',
+            songs: [
+                {
+                    id: 201,
+                    title: '热浪与海风',
+                    artist: '夏日乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
+                },
+                {
+                    id: 202,
+                    title: '夏日回忆',
+                    artist: '海岸线乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
+                }
+            ]
         },
         {
             id: 5,
-            title: '第一人称',
-            artist: '李润祺',
+            name: '私人雷达',
             cover: coverImage,
-            url: '/src/assets/music/第一人称.mp3'
+            description: '私人雷达，发现更多好音乐',
+            songs: [
+                {
+                    id: 201,
+                    title: '热浪与海风',
+                    artist: '夏日乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
+                },
+                {
+                    id: 202,
+                    title: '夏日回忆',
+                    artist: '海岸线乐队',
+                    cover: coverImage,
+                    url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
+                }
+            ]
         },
     ])
+
+    // 当前查看的歌单
+    const currentPlaylist = ref(null)
+
+    // 打开歌单详情
+    const openPlaylistDetail = (playlist) => {
+        currentPlaylist.value = playlist
+    }
+
+    // 关闭歌单详情
+    const closePlaylistDetail = () => {
+        currentPlaylist.value = null
+    }
+
     // 播放列表数据
     const playlist = ref([])
 
@@ -150,7 +239,8 @@ export function useMusicPlayer() {
     })
 
     return {
-        recommendedSongs,
+        recommendedPlaylists,
+        currentPlaylist,
         playlist,
         currentSong,
         audio,
@@ -159,5 +249,7 @@ export function useMusicPlayer() {
         playSong,
         togglePlay,
         addSongToPlaylist,
+        openPlaylistDetail,
+        closePlaylistDetail,
     }
 }

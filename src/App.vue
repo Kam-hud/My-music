@@ -6,26 +6,44 @@ import SettingPanel from '@/components/SettingPanel.vue'
 import { useBackgroundColor } from '@/Composables/useBackgroundColor'
 import { useMusicPlayer } from '@/Composables/useMusicPlayer'
 import Setting from '@/components/Setting.vue'
+import SongsPlayList from '@/PlayList/SongsPlayList.vue'
 
 // // 背景颜色逻辑
 const { backgroundColor, textColor, changeBackgroundColor } = useBackgroundColor()
 
 // 音乐播放器逻辑
-const { recommendedSongs, playlist, currentSong, audio, playPrevious, playNext, playSong, togglePlay, addSongToPlaylist } = useMusicPlayer()
+const {
+    recommendedPlaylists,
+    currentPlaylist,
+    playlist,
+    currentSong,
+    audio,
+    playPrevious,
+    playNext,
+    playSong,
+    togglePlay,
+    addSongToPlaylist,
+    openPlaylistDetail,
+    closePlaylistDetail
+} = useMusicPlayer()
 
 
-// 提供状态和方法给子组件
-provide('currentSong', currentSong)
-provide('recommendedSongs', recommendedSongs)
+// 音乐提供状态和方法给子组件
+provide('recommendedPlaylists', recommendedPlaylists)
+provide('currentPlaylist', currentPlaylist)
 provide('playlist', playlist)
+provide('currentSong', currentSong)
+provide('audio', audio)
 provide('playPrevious', playPrevious)
 provide('playNext', playNext)
 provide('playSong', playSong)
 provide('togglePlay', togglePlay)
-provide('audio', audio)
-provide('textColor', textColor)
 provide('addSongToPlaylist', addSongToPlaylist)
+provide('openPlaylistDetail', openPlaylistDetail)
+provide('closePlaylistDetail', closePlaylistDetail)
 
+// 背景颜色提供状态和方法给子组件
+provide('textColor', textColor)
 </script>
 
 <template>
@@ -36,6 +54,7 @@ provide('addSongToPlaylist', addSongToPlaylist)
             <Setting />
             <SettingPanel :background-color="backgroundColor" @change-background="changeBackgroundColor" />
             <MusicPlayer />
+            <SongsPlayList v-if="currentPlaylist" />
             <router-view style="padding: 20px; height: 100%;"></router-view>
         </div>
     </div>
@@ -48,11 +67,13 @@ provide('addSongToPlaylist', addSongToPlaylist)
 }
 
 .main {
+    position: relative;
     margin-left: 244px;
     flex: 1;
-    overflow-y: auto;
-    height: calc(100vh - 90px);
+    overflow: auto;
+    height: calc(100vh - 110px);
     box-sizing: border-box;
+
     /* 隐藏所有滚动条 */
     &::-webkit-scrollbar {
         display: none;

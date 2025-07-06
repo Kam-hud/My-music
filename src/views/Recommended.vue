@@ -7,16 +7,12 @@ const username = ref('Kam')
 // 当前歌曲
 const currentSong = inject('currentSong')
 // 歌单
-const recommendedSongs = inject('recommendedSongs')
-// 播放歌曲
-const playSong = inject('playSong')
-// 添加歌曲到播放列表
-const addSongToPlaylist = inject('addSongToPlaylist')
+const recommendedPlaylists = inject('recommendedPlaylists')
+const openPlaylistDetail = inject('openPlaylistDetail')
 
-// 处理歌曲点击
-const handleSongClick = (song) => {
-    addSongToPlaylist(song)
-    playSong(song)
+// 处理歌单点击
+const handlePlaylistClick = (playlist) => {
+    openPlaylistDetail(playlist)
 }
 </script>
 
@@ -27,15 +23,15 @@ const handleSongClick = (song) => {
         <h2 class="subtitle">Hi {{ username }} 今日为你推荐</h2>
 
         <!-- 推荐卡片区域 -->
-        <div class="recommendation-cards">
-            <div v-for="song in recommendedSongs" :key="song.id" class="card" @click="handleSongClick(song)"
-                :class="{ 'active': currentSong.id === song.id }">
-                <div class="card-image placeholder">
-                    <img :src="song.cover" alt="" class="card-logo">
-                </div>
+        <div class="playlists-grid">
+            <div v-for="playlist in recommendedPlaylists" :key="playlist.id" class="playlist-card"
+                @click="handlePlaylistClick(playlist)">
                 <div class="card-content">
-                    <h3>{{ song.title }}</h3>
-                    <p>{{ song.artist }}</p>
+                    <h3>{{ playlist.name }}</h3>
+                    <p>{{ playlist.description }}</p>
+                    <div class="playlist-stats">
+                        <span>{{ playlist.songs?.length || 0 }} 首歌曲</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,31 +42,8 @@ const handleSongClick = (song) => {
 $primary-bg: #0a0a1a;
 $card-bg: #1a1a2e;
 $button-bg: #2a2a3e;
-$placeholder-bg: #2a2a4e;
 $text-color: white;
 $text-secondary: rgba(255, 255, 255, 0.9);
-$border-color: rgba(255, 255, 255, 0.1);
-
-@use "sass:color";
-
-// Mixins
-@mixin flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-@mixin card-base {
-    background: $card-bg;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-@mixin placeholder {
-    background: $placeholder-bg;
-    border-radius: 8px;
-    width: 100%;
-}
 
 .recommended {
     flex: 1;
@@ -78,31 +51,10 @@ $border-color: rgba(255, 255, 255, 0.1);
     flex-direction: column;
     padding: 20px;
     background-color: $primary-bg;
-    /* 调整高度计算方式 */
-    height: calc(100vh - 90px); 
+    height: calc(100vh - 90px);
     border-radius: 8px;
-    border: 1px solid $border-color; 
-    box-sizing: border-box; 
-    overflow: auto; 
-
-    /* 自定义滚动条样式 */
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    &::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 4px;
-        
-        &:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-    }
+    box-sizing: border-box;
+    // overflow: auto;
 
     .title {
         font-size: 32px;
@@ -115,65 +67,52 @@ $border-color: rgba(255, 255, 255, 0.1);
         color: $text-secondary;
     }
 
-    .recommendation-cards {
+    /* 新增紧凑卡片网格布局 */
+    .playlists-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
-        margin-bottom: 40px;
-        padding-bottom: 120px;
 
-        .card {
-            @include card-base;
+        .playlist-card {
+            background: $card-bg;
+            border-radius: 12px;
+            padding: 20px;
             cursor: pointer;
             transition: transform 0.2s ease;
 
-            &-image {
-                &.placeholder {
-                    @include placeholder;
-                    height: 200px;
-                }
-
-                .card-logo {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover
-                }
-            }
-
-            &-content {
-                padding: 16px;
-            }
-
-            &-actions {
-                display: flex;
-                gap: 12px;
-                margin-top: 12px;
-
-                button {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    border: none;
-                    background: $button-bg;
-                    color: $text-color;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-
-                    &:hover {
-                        background: color.adjust($button-bg, $lightness: 10%);
-                    }
-                }
-            }
-
             &:hover {
-                transform: scale(1.02);
+                transform: translateY(-5px);
+                background: lighten($card-bg, 5%);
             }
 
-            &.active {
-                border: 2px solid #e8b9aa;
+            .card-content {
+                h3 {
+                    margin: 0 0 10px 0;
+                    font-size: 18px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                }
+
+                p {
+                    margin: 0 0 10px 0;
+                    color: $text-secondary;
+                    font-size: 14px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                }
+
+                .playlist-stats {
+                    color: rgba(255, 255, 255, 0.6);
+                    font-size: 12px;
+                }
             }
         }
     }
-
 }
 </style>
