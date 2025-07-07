@@ -1,18 +1,20 @@
 <script setup>
 import { ref, inject } from 'vue'
+
 // 用户名
 const username = ref('Kam')
-
-// 注入共享状态和方法
-// 当前歌曲
-const currentSong = inject('currentSong')
-// 歌单
+// 注入推荐歌单列表和打开歌单详情方法
 const recommendedPlaylists = inject('recommendedPlaylists')
 const openPlaylistDetail = inject('openPlaylistDetail')
 
 // 处理歌单点击
 const handlePlaylistClick = (playlist) => {
     openPlaylistDetail(playlist)
+}
+
+// 获取封面图片路径
+const getCoverImage = (playlist) => {
+    return playlist.cover || require('@/assets/images/default-cover.jpg');
 }
 </script>
 
@@ -26,12 +28,17 @@ const handlePlaylistClick = (playlist) => {
         <div class="playlists-grid">
             <div v-for="playlist in recommendedPlaylists" :key="playlist.id" class="playlist-card"
                 @click="handlePlaylistClick(playlist)">
+                <!-- 封面图片 -->
+                <div class="card-cover">
+                    <img :src="getCoverImage(playlist)" alt="歌单封面">
+                    <div class="playlist-stats">
+                        <span>{{ playlist.songs?.length || 0 }} 首</span>
+                    </div>
+                </div>
+
                 <div class="card-content">
                     <h3>{{ playlist.name }}</h3>
                     <p>{{ playlist.description }}</p>
-                    <div class="playlist-stats">
-                        <span>{{ playlist.songs?.length || 0 }} 首歌曲</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -39,22 +46,14 @@ const handlePlaylistClick = (playlist) => {
 </template>
 
 <style lang="scss" scoped>
-$primary-bg: #0a0a1a;
-$card-bg: #1a1a2e;
-$button-bg: #2a2a3e;
-$text-color: white;
-$text-secondary: rgba(255, 255, 255, 0.9);
-
 .recommended {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background-color: $primary-bg;
     height: calc(100vh - 90px);
     border-radius: 8px;
     box-sizing: border-box;
-    // overflow: auto;
 
     .title {
         font-size: 32px;
@@ -64,54 +63,94 @@ $text-secondary: rgba(255, 255, 255, 0.9);
     .subtitle {
         font-size: 24px;
         margin-bottom: 24px;
-        color: $text-secondary;
+        opacity: 0.9;
     }
 
-    /* 新增紧凑卡片网格布局 */
+    /* 卡片网格布局 */
     .playlists-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
 
         .playlist-card {
-            background: $card-bg;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            padding: 20px;
+            overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
 
             &:hover {
-                transform: translateY(-5px);
-                background: lighten($card-bg, 5%);
+                transform: translateY(-8px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             }
 
-            .card-content {
-                h3 {
-                    margin: 0 0 10px 0;
-                    font-size: 18px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
+            /* 封面样式 */
+            .card-cover {
+                position: relative;
+                height: 180px;
+                overflow: hidden;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.5s ease;
                 }
 
-                p {
-                    margin: 0 0 10px 0;
-                    color: $text-secondary;
-                    font-size: 14px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
+                &:hover img {
+                    transform: scale(1.05);
                 }
 
                 .playlist-stats {
-                    color: rgba(255, 255, 255, 0.6);
+                    position: absolute;
+                    bottom: 10px;
+                    right: 10px;
+                    background: rgba(0, 0, 0, 0.7);
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
                     font-size: 12px;
                 }
             }
+
+            .card-content {
+                padding: 15px;
+
+                h3 {
+                    margin: 0 0 8px 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    min-height: 44px;
+                }
+
+                p {
+                    margin: 0;
+                    font-size: 13px;
+                    opacity: 0.8;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    min-height: 38px;
+                }
+            }
+        }
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .playlists-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+
+        .playlist-card .card-cover {
+            height: 140px;
         }
     }
 }

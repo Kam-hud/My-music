@@ -16,11 +16,6 @@ const routes = [
         component: () => import('@/views/Winnow.vue')
     },
     {
-        path: '/dynamic',
-        name: '动态',
-        component: () => import('@/views/DynamicState.vue')
-    },
-    {
         path: '/likeMusic',
         name: '喜欢的音乐',
         component: () => import('@/views/LikeMusic.vue')
@@ -29,11 +24,6 @@ const routes = [
         path: '/recentlyPlayed',
         name: '最近播放',
         component: () => import('@/views/RecentlyPlayed.vue')
-    },
-    {
-        path: '/myCollection',
-        name: '我的收藏',
-        component: () => import('@/views/MyCollection.vue')
     },
     {
         path: '/download',

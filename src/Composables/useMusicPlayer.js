@@ -1,27 +1,32 @@
 import { ref, onMounted, watch } from 'vue'
 // 导入图片
-import coverImage from '@/assets/images/pig5.jpg'
+import coverImage1 from '@/assets/images/music1.jpg'
+import coverImage2 from '@/assets/images/music2.jpg'
+import coverImage3 from '@/assets/images/music3.jpg'
+import coverImage4 from '@/assets/images/music4.jpg'
+import coverImage5 from '@/assets/images/music5.jpg'
+import coverImage6 from '@/assets/images/songs/free_fall.jpg'
 
 export function useMusicPlayer() {
     const recommendedPlaylists = ref([
         {
             id: 1,
             name: '每日推荐 | 从「我不爱一直想你」听起',
-            cover: coverImage,
+            cover: coverImage1,
             description: '精选每日推荐歌曲,开启美好一天',
             songs: [
                 {
                     id: 101,
                     title: '跳楼机',
                     artist: 'LBI利比',
-                    cover: coverImage,
+                    cover: coverImage6,
                     url: '/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg'
                 },
                 {
                     id: 102,
                     title: '像晴天像雨天',
                     artist: '汪苏泷',
-                    cover: coverImage,
+                    cover: coverImage1,
                     url: '/src/assets/music/汪苏泷 - 像晴天像雨天.flac'
                 }
             ]
@@ -29,21 +34,21 @@ export function useMusicPlayer() {
         {
             id: 2,
             name: '私人雷达',
-            cover: coverImage,
+            cover: coverImage2,
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
                     id: 201,
                     title: '热浪与海风',
                     artist: '夏日乐队',
-                    cover: coverImage,
+                    cover: coverImage2,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
                     id: 202,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
-                    cover: coverImage,
+                    cover: coverImage2,
                     url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
                 }
             ]
@@ -51,21 +56,21 @@ export function useMusicPlayer() {
         {
             id: 3,
             name: '私人雷达',
-            cover: coverImage,
+            cover: coverImage3,
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
                     id: 201,
                     title: '热浪与海风',
                     artist: '夏日乐队',
-                    cover: coverImage,
+                    cover: coverImage3,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
                     id: 202,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
-                    cover: coverImage,
+                    cover: coverImage3,
                     url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
                 }
             ]
@@ -73,21 +78,21 @@ export function useMusicPlayer() {
         {
             id: 4,
             name: '私人雷达',
-            cover: coverImage,
+            cover: coverImage4,
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
                     id: 201,
                     title: '热浪与海风',
                     artist: '夏日乐队',
-                    cover: coverImage,
+                    cover: coverImage4,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
                     id: 202,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
-                    cover: coverImage,
+                    cover: coverImage4,
                     url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
                 }
             ]
@@ -95,21 +100,21 @@ export function useMusicPlayer() {
         {
             id: 5,
             name: '私人雷达',
-            cover: coverImage,
+            cover: coverImage5,
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
                     id: 201,
                     title: '热浪与海风',
                     artist: '夏日乐队',
-                    cover: coverImage,
+                    cover: coverImage5,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
                     id: 202,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
-                    cover: coverImage,
+                    cover: coverImage5,
                     url: '/src/assets/music/海岸线乐队 - 夏日回忆.mp3',
                 }
             ]
@@ -228,6 +233,18 @@ export function useMusicPlayer() {
         }
     }
 
+    // 点击喜欢icon时，会保存到我喜欢这个界面
+    const likeSong = (songId) => {
+        // 这里可以添加逻辑，将歌曲添加到喜欢列表
+        console.log(`喜欢的歌曲ID: ${songId}`)
+    }
+
+    // 下载歌曲
+    const downloadSong = (songId) => {
+        // 这里可以添加逻辑，将歌曲下载到本地
+        console.log(`下载的歌曲ID: ${songId}`)
+    }
+
     // 监听当前歌曲变化
     watch(currentSong, () => {
         saveCurrentSong()
@@ -251,5 +268,7 @@ export function useMusicPlayer() {
         addSongToPlaylist,
         openPlaylistDetail,
         closePlaylistDetail,
+        likeSong,
+        downloadSong
     }
 }

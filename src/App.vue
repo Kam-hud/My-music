@@ -24,7 +24,9 @@ const {
     togglePlay,
     addSongToPlaylist,
     openPlaylistDetail,
-    closePlaylistDetail
+    closePlaylistDetail,
+    likeSong,
+    downloadSong
 } = useMusicPlayer()
 
 
@@ -41,9 +43,13 @@ provide('togglePlay', togglePlay)
 provide('addSongToPlaylist', addSongToPlaylist)
 provide('openPlaylistDetail', openPlaylistDetail)
 provide('closePlaylistDetail', closePlaylistDetail)
+provide('likeSong', likeSong)
+provide('downloadSong', downloadSong)
 
 // 背景颜色提供状态和方法给子组件
 provide('textColor', textColor)
+provide('backgroundColor', backgroundColor)
+provide('changeBackgroundColor', changeBackgroundColor)
 </script>
 
 <template>

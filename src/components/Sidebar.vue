@@ -16,14 +16,12 @@ const route = useRoute()
 const navItems = ref([
     { path: '/recommended', name: '推荐', icon: 'star' },
     { path: '/winnow', name: '精选', icon: 'gem' },
-    { path: '/dynamic', name: '动态', icon: 'bolt' }
 ])
 
 // 个人项
 const myItems = ref([
     { path: '/likeMusic', name: '我喜欢的音乐', icon: 'heart' },
     { path: '/recentlyPlayed', name: '最近播放', icon: 'clock' },
-    { path: '/myCollection', name: '我的收藏', icon: 'star', showMore: true },
     { path: '/download', name: '下载管理', icon: 'download', showMore: true },
     { path: '/localMusic', name: '本地音乐', icon: 'music', showMore: true },
 ])
@@ -203,6 +201,7 @@ const closeModal = () => {
             display: block;
             border-radius: 5px;
             opacity: 0.9;
+            color: inherit;
 
             &:hover {
                 background-color: rgba(255, 255, 255, 0.1);

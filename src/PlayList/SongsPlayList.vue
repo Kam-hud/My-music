@@ -7,6 +7,9 @@ const playSong = inject('playSong');
 const addSongToPlaylist = inject('addSongToPlaylist');
 const closePlaylistDetail = inject('closePlaylistDetail');
 
+const likeSong = inject('likeSong');
+const downloadSong = inject('downloadSong');
+
 // 处理歌曲点击
 const handleSongClick = (song) => {
     addSongToPlaylist(song);
@@ -26,21 +29,37 @@ const handleSongClick = (song) => {
                     <h2>{{ currentPlaylist.name }}</h2>
                     <p>{{ currentPlaylist.description }}</p>
                     <div class="playlist-stats">
-                        <span>歌曲: {{ currentPlaylist.songs.length }}</span>
+                        <span>歌曲{{ currentPlaylist.songs.length }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="songs-grid">
-            <div v-for="(song, index) in currentPlaylist.songs" :key="song.id" class="song-card"
-                @click="handleSongClick(song)">
-                <div class="card-index">{{ index + 1 }}</div>
-                <div class="card-content">
-                    <h3 class="song-title">{{ song.title }}</h3>
-                    <p class="song-artist">{{ song.artist }}</p>
+        <div class="songs-list">
+            <div class="list-header">
+                <div class="header-cover">歌曲封面</div>
+                <div class="header-title">歌曲/歌手</div>
+                <div class="header-duration">时长</div>
+                <div class="header-actions">操作</div>
+            </div>
+
+            <div v-for="song in currentPlaylist.songs" :key="song.id" class="song-item" @click="handleSongClick(song)">
+                <div class="song-cover">
+                    <img :src="song.cover" alt="歌曲封面" />
                 </div>
-                <div class="song-duration">{{ song.duration || '0:00' }}</div>
+                <div class="song-info">
+                    <div class="song-title">{{ song.title }}</div>
+                    <div class="song-artist">{{ song.artist }}</div>
+                </div>
+                <div class="song-duration">{{ song.duration || '00:00:00' }}</div>
+                <div class="song-actions">
+                    <button class="action-btn" @click.stop="likeSong(song.id)">
+                        <font-awesome-icon icon="heart" />
+                    </button>
+                    <button class="action-btn" @click.stop="downloadSong(song.id)">
+                        <font-awesome-icon icon="download" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -54,10 +73,14 @@ const handleSongClick = (song) => {
     background: #1a1a2e;
     z-index: 1000;
     padding: 20px;
-    overflow-y: auto;
+    overflow: auto;
     border-radius: 16px;
     box-sizing: border-box;
     height: calc(100vh - 110px);
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     .playlist-header {
         display: flex;
@@ -91,58 +114,144 @@ const handleSongClick = (song) => {
                 }
 
                 p {
-                    color: rgba(255, 255, 255, 0.8);
                     margin-bottom: 15px;
                     font-size: 16px;
                 }
 
                 .playlist-stats {
-                    color: rgba(255, 255, 255, 0.6);
                     font-size: 14px;
                 }
             }
         }
     }
 
-    /* 新增卡片网格样式 */
-    .songs-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
+    .songs-list {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 25px;
 
-        .song-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
+        .list-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+
+            .header-cover {
+                width: 80px;
+                text-align: center;
+            }
+
+            .header-title {
+                flex: 2;
+                padding-left: 20px;
+                text-align: left;
+            }
+
+            .header-duration {
+                width: 100px;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 120px;
+                text-align: center;
+            }
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
             &:hover {
-                background: rgba(255, 255, 255, 0.1);
-                transform: translateY(-5px);
+                background: rgba(255, 255, 255, 0.08);
             }
 
-            .card-index {
-                color: rgba(255, 255, 255, 0.6);
-                margin-bottom: 10px;
+            .song-cover {
+                width: 80px;
+                height: 80px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: visible;
+
+                img {
+                    width: 60px;
+                    height: 60px;
+                    object-fit: cover;
+                    border-radius: 8px;
+                }
             }
 
-            .song-title {
-                font-size: 16px;
-                margin: 0 0 5px 0;
-            }
+            .song-info {
+                flex: 2;
+                padding-left: 20px;
+                text-align: left;
 
-            .song-artist {
-                color: rgba(255, 255, 255, 0.6);
-                font-size: 14px;
-                margin: 0;
+                .song-title {
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                }
+
+                .song-artist {
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.7);
+                }
             }
 
             .song-duration {
-                color: rgba(255, 255, 255, 0.6);
-                font-size: 12px;
-                text-align: right;
-                margin-top: 10px;
+                width: 100px;
+                text-align: center;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 14px;
+            }
+
+            .song-actions {
+                width: 120px;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+
+                .action-btn {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                        transform: scale(1.1);
+                    }
+
+                    &.active {
+                        color: #e52e71;
+
+                        &.like:hover {
+                            color: #ff6b9c;
+                        }
+                    }
+
+                    &.download.active {
+                        color: #4cc9f0;
+
+                        &:hover {
+                            color: #7ad0f0;
+                        }
+                    }
+                }
             }
         }
     }
