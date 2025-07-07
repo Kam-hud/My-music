@@ -53,10 +53,10 @@ const handleSongClick = (song) => {
                 </div>
                 <div class="song-duration">{{ song.duration || '00:00:00' }}</div>
                 <div class="song-actions">
-                    <button class="action-btn" @click.stop="likeSong(song.id)">
+                    <button class="action-btn" @click.stop=" likeSong(song)">
                         <font-awesome-icon icon="heart" />
                     </button>
-                    <button class="action-btn" @click.stop="downloadSong(song.id)">
+                    <button class="action-btn" @click.stop="downloadSong(song)">
                         <font-awesome-icon icon="download" />
                     </button>
                 </div>

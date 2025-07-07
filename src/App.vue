@@ -5,6 +5,7 @@ import MusicPlayer from '@/components/MusicPlayer.vue'
 import SettingPanel from '@/components/SettingPanel.vue'
 import { useBackgroundColor } from '@/Composables/useBackgroundColor'
 import { useMusicPlayer } from '@/Composables/useMusicPlayer'
+import { useLikeMusic } from '@/Composables/useLikeMusic'
 import Setting from '@/components/Setting.vue'
 import SongsPlayList from '@/PlayList/SongsPlayList.vue'
 
@@ -25,10 +26,9 @@ const {
     addSongToPlaylist,
     openPlaylistDetail,
     closePlaylistDetail,
-    likeSong,
-    downloadSong
 } = useMusicPlayer()
 
+const { likeSonglist, likeSong, downloadSong } = useLikeMusic()
 
 // 音乐提供状态和方法给子组件
 provide('recommendedPlaylists', recommendedPlaylists)
@@ -45,6 +45,7 @@ provide('openPlaylistDetail', openPlaylistDetail)
 provide('closePlaylistDetail', closePlaylistDetail)
 provide('likeSong', likeSong)
 provide('downloadSong', downloadSong)
+provide('likeSonglist', likeSonglist)
 
 // 背景颜色提供状态和方法给子组件
 provide('textColor', textColor)

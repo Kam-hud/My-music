@@ -60,14 +60,14 @@ export function useMusicPlayer() {
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
-                    id: 201,
+                    id: 301,
                     title: '热浪与海风',
                     artist: '夏日乐队',
                     cover: coverImage3,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
-                    id: 202,
+                    id: 302,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
                     cover: coverImage3,
@@ -82,14 +82,14 @@ export function useMusicPlayer() {
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
-                    id: 201,
+                    id: 401,
                     title: '热浪与海风',
                     artist: '夏日乐队',
                     cover: coverImage4,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
-                    id: 202,
+                    id: 402,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
                     cover: coverImage4,
@@ -104,14 +104,14 @@ export function useMusicPlayer() {
             description: '私人雷达，发现更多好音乐',
             songs: [
                 {
-                    id: 201,
+                    id: 501,
                     title: '热浪与海风',
                     artist: '夏日乐队',
                     cover: coverImage5,
                     url: '/src/assets/music/夏日乐队 - 热浪与海风.mp3',
                 },
                 {
-                    id: 202,
+                    id: 502,
                     title: '夏日回忆',
                     artist: '海岸线乐队',
                     cover: coverImage5,
@@ -233,18 +233,6 @@ export function useMusicPlayer() {
         }
     }
 
-    // 点击喜欢icon时，会保存到我喜欢这个界面
-    const likeSong = (songId) => {
-        // 这里可以添加逻辑，将歌曲添加到喜欢列表
-        console.log(`喜欢的歌曲ID: ${songId}`)
-    }
-
-    // 下载歌曲
-    const downloadSong = (songId) => {
-        // 这里可以添加逻辑，将歌曲下载到本地
-        console.log(`下载的歌曲ID: ${songId}`)
-    }
-
     // 监听当前歌曲变化
     watch(currentSong, () => {
         saveCurrentSong()
@@ -268,7 +256,5 @@ export function useMusicPlayer() {
         addSongToPlaylist,
         openPlaylistDetail,
         closePlaylistDetail,
-        likeSong,
-        downloadSong
     }
 }

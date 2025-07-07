@@ -14,7 +14,7 @@ const handlePlaylistClick = (playlist) => {
 
 // 获取封面图片路径
 const getCoverImage = (playlist) => {
-    return playlist.cover || require('@/assets/images/default-cover.jpg');
+    return playlist.cover || require('@/assets/images/');
 }
 </script>
 
