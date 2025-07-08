@@ -72,7 +72,6 @@ const handleSongClick = (song) => {
     position: absolute;
     left: 0;
     right: 0;
-    background: #a6a6a9;
     z-index: 1000;
     padding: 20px;
     overflow: auto;

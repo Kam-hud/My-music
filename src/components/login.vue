@@ -7,31 +7,31 @@ const registeredUsers = ref([]) // 存储已注册用户的数据
 const isRegistering = ref(false) // 控制登录和注册的状态
 
 // 登录
-const loginAccount =ref('')
+const loginAccount = ref('')
 const loginPassword = ref('')
 
 // 注册
 const registerAccount = ref('')
 const registerPassword = ref('')
 
-const loadRegisteredUsers = () => { 
+const loadRegisteredUsers = () => {
     const users = JSON.parse(localStorage.getItem('registeredUsers')) || []
     registeredUsers.value = users
 }
 
 
 // 检查账号是否已经注册
-const checkUserExists = (account) => { 
+const checkUserExists = (account) => {
     return registeredUsers.value.some(user => user.account === account)
 }
 
 // 保存用户到 localStorage
-const saveUserToLocalStorage = () => { 
-    localStorage.setItem('registeredUsers',JSON.stringify(registeredUsers.value))
+const saveUserToLocalStorage = () => {
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers.value))
 }
 // 登录
-const handleLogin = () => { 
-    if (checkUserExists(loginAccount.value) && registeredUsers.value.find(user => user.account === loginAccount.value).password === loginPassword.value) { 
+const handleLogin = () => {
+    if (checkUserExists(loginAccount.value) && registeredUsers.value.find(user => user.account === loginAccount.value).password === loginPassword.value) {
         alert("登录成功")
         // loginAccount.value = ''
         // loginPassword.value = ''
@@ -52,7 +52,7 @@ const handleRegister = () => {
         alert('注册成功！');
         saveUserToLocalStorage()
         registerAccount.value = ''
-        registerPassword.value = ''  
+        registerPassword.value = ''
         isRegistering.value = false; // 返回登录界面
     } else {
         alert('账号已注册！');
@@ -60,12 +60,12 @@ const handleRegister = () => {
 };
 
 // 立即注册
-const goToRegister = () => { 
+const goToRegister = () => {
     isRegistering.value = true
 }
 
 // 返回登录
-const goToLogin = () => { 
+const goToLogin = () => {
     isRegistering.value = false
 }
 
@@ -111,7 +111,7 @@ loadRegisteredUsers()
                 <div class="register" @click="handleRegister">
                     <span>立即注册</span>
                 </div>
-                <div class="back-login"  @click="goToLogin">
+                <div class="back-login" @click="goToLogin">
                     <span>返回登录</span>
                 </div>
             </div>
@@ -120,7 +120,7 @@ loadRegisteredUsers()
 </template>
 
 <style lang="scss" scoped>
-.container{
+.container {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -132,11 +132,12 @@ loadRegisteredUsers()
     max-width: 1252px;
     max-height: 580px;
     width: 100%;
-    height: 100%; 
+    height: 100%;
     padding: 20px;
     margin: 0 auto;
     border-radius: 8px;
-    .login-info{
+
+    .login-info {
         width: 600px;
         height: 260px;
         border-radius: 8px;
@@ -146,20 +147,25 @@ loadRegisteredUsers()
         // justify-content: center;
         align-items: center;
         padding: 20px;
-        h2{
+
+        h2 {
             color: #333;
             top: 0;
         }
+
         .input-group {
-            display: flex; 
-            align-items: center; /* 垂直居中标签和输入框 */
-            width: 100%; 
+            display: flex;
+            align-items: center;
+            /* 垂直居中标签和输入框 */
+            width: 100%;
             margin-bottom: 15px;
             justify-content: center;
+
             span {
                 color: #222;
                 margin-right: 10px;
             }
+
             input {
                 width: 200px;
                 padding: 8px;
@@ -171,26 +177,30 @@ loadRegisteredUsers()
         .login-actions {
             display: flex;
             justify-content: space-between; // 两个元素之间的空间
-            width: 100%; 
+            width: 100%;
 
-            .forget-password{
+            .forget-password {
                 color: #333;
                 cursor: pointer;
                 margin-left: 170px;
-                &:hover{
+
+                &:hover {
                     color: #a5a6af;
                 }
             }
+
             .register-now {
                 color: #333;
                 cursor: pointer;
-                margin-right: 170px; 
-                &:hover{
+                margin-right: 170px;
+
+                &:hover {
                     color: #a5a6af;
                 }
             }
         }
-        .login-now{
+
+        .login-now {
             width: 250px;
             height: 20px;
             padding: 10px;
@@ -202,7 +212,8 @@ loadRegisteredUsers()
             margin-top: 20px;
         }
     }
-    .register-info{
+
+    .register-info {
         width: 600px;
         height: 260px;
         border-radius: 8px;
@@ -212,40 +223,49 @@ loadRegisteredUsers()
         // justify-content: center;
         align-items: center;
         padding: 20px;
-        h2{
+
+        h2 {
             color: #333;
             top: 0;
         }
+
         .input-group {
-            display: flex; 
-            align-items: center; /* 垂直居中标签和输入框 */
-            width: 100%; 
+            display: flex;
+            align-items: center;
+            /* 垂直居中标签和输入框 */
+            width: 100%;
             margin-bottom: 15px;
             justify-content: center;
+
             span {
                 color: #222;
                 margin-right: 10px;
             }
+
             input {
                 width: 200px;
-                padding: 8px; /* 输入框内边距 */
+                padding: 8px;
+                /* 输入框内边距 */
                 border: 1px solid #ccc;
                 border-radius: 4px;
             }
         }
+
         .register-actions {
             display: flex;
             justify-content: space-between; // 两个元素之间的空间
-            width: 100%; 
-            .register{
+            width: 100%;
+
+            .register {
                 color: #333;
                 cursor: pointer;
                 margin-left: 170px;
             }
+
             .back-login {
                 color: #333;
                 cursor: pointer;
-                margin-right: 170px; 
+                margin-right: 170px;
             }
         }
     }

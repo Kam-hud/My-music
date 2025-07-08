@@ -26,6 +26,7 @@ const {
     addSongToPlaylist,
     openPlaylistDetail,
     closePlaylistDetail,
+    showPlaylistDetail
 } = useMusicPlayer()
 
 const { likeSonglist, likeSong, downloadSong, isLiked } = useLikeMusic()
@@ -47,6 +48,7 @@ provide('likeSong', likeSong)
 provide('downloadSong', downloadSong)
 provide('likeSonglist', likeSonglist)
 provide('isLiked', isLiked)
+provide('showPlaylistDetail', showPlaylistDetail)
 
 // 背景颜色提供状态和方法给子组件
 provide('textColor', textColor)
@@ -62,8 +64,8 @@ provide('changeBackgroundColor', changeBackgroundColor)
             <Setting />
             <SettingPanel :background-color="backgroundColor" @change-background="changeBackgroundColor" />
             <MusicPlayer />
-            <SongsPlayList v-if="currentPlaylist" />
-            <router-view style="padding: 20px; height: 100%;"></router-view>
+            <SongsPlayList v-if="showPlaylistDetail && currentRoute.startsWith('/playlist/')" />
+            <router-view v-else style="padding: 20px; height: 100%;"></router-view>
         </div>
     </div>
 </template>

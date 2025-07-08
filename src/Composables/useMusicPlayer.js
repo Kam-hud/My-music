@@ -1,4 +1,6 @@
 import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
 // 导入图片
 import coverImage1 from '@/assets/images/music1.jpg'
 import coverImage2 from '@/assets/images/music2.jpg'
@@ -8,6 +10,8 @@ import coverImage5 from '@/assets/images/music5.jpg'
 import coverImage6 from '@/assets/images/songs/free_fall.jpg'
 
 export function useMusicPlayer() {
+    const router = useRouter()
+
     const recommendedPlaylists = ref([
         {
             id: 1,
@@ -124,13 +128,18 @@ export function useMusicPlayer() {
     // 当前查看的歌单
     const currentPlaylist = ref(null)
 
+    const showPlaylistDetail = ref(false)
+
     // 打开歌单详情
     const openPlaylistDetail = (playlist) => {
         currentPlaylist.value = playlist
+        showPlaylistDetail.value = true
+        router.push(`/playlist/${playlist.id}`)
     }
 
     // 关闭歌单详情
     const closePlaylistDetail = () => {
+        showPlaylistDetail.value = false
         currentPlaylist.value = null
     }
 
@@ -211,13 +220,6 @@ export function useMusicPlayer() {
         }
     }
 
-    // 监听音频事件
-    onMounted(() => {
-        audio.value.addEventListener('ended', () => {
-            playNext()
-        })
-    })
-
     // 保存当前歌曲到 localStorage
     const saveCurrentSong = () => {
         localStorage.setItem('currentSong', JSON.stringify(currentSong.value))
@@ -238,8 +240,12 @@ export function useMusicPlayer() {
         saveCurrentSong()
     }, { deep: true })
 
-    // 在组件挂载时加载保存的歌曲
+    // 在组件挂载时
     onMounted(() => {
+        // 音频变化
+        audio.value.addEventListener('ended', () => {
+            playNext()
+        })
         loadCurrentSong()
     })
 
@@ -249,6 +255,7 @@ export function useMusicPlayer() {
         playlist,
         currentSong,
         audio,
+        showPlaylistDetail,
         playPrevious,
         playNext,
         playSong,
@@ -256,5 +263,6 @@ export function useMusicPlayer() {
         addSongToPlaylist,
         openPlaylistDetail,
         closePlaylistDetail,
+
     }
 }

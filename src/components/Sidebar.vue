@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import DraggableList from '@/components/DraggableList.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 // 当前路由信息
-const route = useRoute()
+const router = useRouter()
 
 // 导航项
 const navItems = ref([
@@ -43,7 +43,7 @@ const toggleShowMore = () => {
 
 // 检查当前路由是否激活
 const isActive = (path) => {
-    return route.path === path
+    return router.path === path
 }
 
 // 更新用户列表的顺序
