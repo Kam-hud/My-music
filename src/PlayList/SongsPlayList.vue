@@ -8,6 +8,8 @@ const addSongToPlaylist = inject('addSongToPlaylist');
 const closePlaylistDetail = inject('closePlaylistDetail');
 
 const likeSong = inject('likeSong');
+const isLiked = inject('isLiked');
+
 const downloadSong = inject('downloadSong');
 
 // 处理歌曲点击
@@ -53,7 +55,7 @@ const handleSongClick = (song) => {
                 </div>
                 <div class="song-duration">{{ song.duration || '00:00:00' }}</div>
                 <div class="song-actions">
-                    <button class="action-btn" @click.stop=" likeSong(song)">
+                    <button class="action-btn" :class="{ 'active': isLiked(song.id) }" @click.stop="likeSong(song)">
                         <font-awesome-icon icon="heart" />
                     </button>
                     <button class="action-btn" @click.stop="downloadSong(song)">
@@ -70,7 +72,7 @@ const handleSongClick = (song) => {
     position: absolute;
     left: 0;
     right: 0;
-    background: #1a1a2e;
+    background: #a6a6a9;
     z-index: 1000;
     padding: 20px;
     overflow: auto;

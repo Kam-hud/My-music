@@ -28,7 +28,7 @@ const {
     closePlaylistDetail,
 } = useMusicPlayer()
 
-const { likeSonglist, likeSong, downloadSong } = useLikeMusic()
+const { likeSonglist, likeSong, downloadSong, isLiked } = useLikeMusic()
 
 // 音乐提供状态和方法给子组件
 provide('recommendedPlaylists', recommendedPlaylists)
@@ -46,6 +46,7 @@ provide('closePlaylistDetail', closePlaylistDetail)
 provide('likeSong', likeSong)
 provide('downloadSong', downloadSong)
 provide('likeSonglist', likeSonglist)
+provide('isLiked', isLiked)
 
 // 背景颜色提供状态和方法给子组件
 provide('textColor', textColor)

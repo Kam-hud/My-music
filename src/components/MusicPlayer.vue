@@ -10,6 +10,9 @@ const playNext = inject('playNext')
 const playSong = inject('playSong')
 const togglePlay = inject('togglePlay')
 const audio = inject('audio')
+// 喜欢功能
+const likeSong = inject('likeSong')
+const isLiked = inject('isLiked')
 
 // 播放器状态
 const currentPosition = ref(0)
@@ -19,7 +22,6 @@ const showVolumeControls = ref(false)
 const playMode = ref('顺序') // 顺序/单曲循环/随机
 const showLyrics = ref(false)
 const isHovering = ref(false)
-const isPlayingListVisible = ref(false)
 
 // 播放模式图标映射
 const playModeIcons = computed(() => ({
@@ -30,7 +32,7 @@ const playModeIcons = computed(() => ({
 
 // 操作图标
 const actionIcons = ref([
-    { id: 1, icon: 'heart', name: '喜欢' },
+    { id: 1, icon: 'heart', name: '喜欢', action: (song) => likeSong(song) },
     { id: 2, icon: 'comment', name: '评论' },
     { id: 3, icon: 'share-alt', name: '分享' },
     { id: 4, icon: 'download', name: '下载' }
@@ -133,6 +135,9 @@ const removeFromPlaylist = (songId) => {
     }
 }
 
+// 喜欢
+
+
 // 卸载组件
 onUnmounted(() => {
     audio.value.removeEventListener('timeupdate', updateProgress)
@@ -169,7 +174,11 @@ onUnmounted(() => {
                     <div class="track-artist">{{ currentSong.artist || '选择歌曲开始播放' }}</div>
                 </div>
                 <div class="action-icons">
-                    <div v-for="item in actionIcons" :key="item.id" class="action-icon" :title="item.name">
+                    <div v-for="item in actionIcons" :key="item.id" class="action-icon" :title="item.name"
+                        @click.stop="item.action && item.action(currentSong)" :class="{
+                            'active': item.id === 1 && isLiked(currentSong.id),
+                            'like-icon': item.id === 1
+                        }">
                         <font-awesome-icon :icon="item.icon" />
                     </div>
                 </div>
@@ -421,6 +430,10 @@ onUnmounted(() => {
                     opacity: 0.7;
                     transition: opacity 0.3s, color 0.3s;
                     font-size: 18px;
+
+                    &.active {
+                        color: #ff6b6b;
+                    }
 
                     &:hover {
                         opacity: 1;
