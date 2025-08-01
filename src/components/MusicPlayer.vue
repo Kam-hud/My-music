@@ -2,6 +2,8 @@
 import { ref, inject, onMounted, onUnmounted, computed } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+const isSidebarCollapsed = inject('isSidebarCollapsed', ref(false))
+
 // 从根组件注入的状态和方法
 const currentSong = inject('currentSong')
 const playlist = inject('playlist')
@@ -22,6 +24,8 @@ const showVolumeControls = ref(false)
 const playMode = ref('顺序') // 顺序/单曲循环/随机
 const showLyrics = ref(false)
 const isHovering = ref(false)
+
+const isCollapsed = ref(false)
 
 // 播放模式图标映射
 const playModeIcons = computed(() => ({
@@ -145,8 +149,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="music-player" :class="{ expanded: isHovering }" @mouseenter="isHovering = true"
-        @mouseleave="isHovering = false">
+    <div class="music-player" :class="{ expanded: isHovering }" :style="{ left: isSidebarCollapsed ? '74px' : '244px' }"
+        @mouseenter="isHovering = true" @mouseleave="isHovering = false">
         <!-- 进度条 -->
         <div class="progress-container">
             <div class="progress-bar" @click="setPlayPosition">

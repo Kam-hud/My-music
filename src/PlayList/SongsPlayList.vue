@@ -5,7 +5,6 @@ import { inject } from 'vue';
 const currentPlaylist = inject('currentPlaylist');
 const playSong = inject('playSong');
 const addSongToPlaylist = inject('addSongToPlaylist');
-const closePlaylistDetail = inject('closePlaylistDetail');
 
 const likeSong = inject('likeSong');
 const isLiked = inject('isLiked');
@@ -23,9 +22,6 @@ const handleSongClick = (song) => {
 <template>
     <div class="playlist-detail" v-if="currentPlaylist">
         <div class="playlist-header">
-            <button class="back-button" @click="closePlaylistDetail">
-                <font-awesome-icon icon="fa-solid fa-arrow-left" />
-            </button>
             <div class="playlist-info">
                 <div class="playlist-text">
                     <h2>{{ currentPlaylist.name }}</h2>
@@ -87,25 +83,6 @@ const handleSongClick = (song) => {
         display: flex;
         flex-direction: column;
         margin-bottom: 30px;
-
-        .back-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.1);
-            }
-        }
 
         .playlist-info {
             .playlist-text {

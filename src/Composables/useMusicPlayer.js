@@ -137,12 +137,6 @@ export function useMusicPlayer() {
         router.push(`/playlist/${playlist.id}`)
     }
 
-    // 关闭歌单详情
-    const closePlaylistDetail = () => {
-        showPlaylistDetail.value = false
-        currentPlaylist.value = null
-    }
-
     // 播放列表数据
     const playlist = ref([])
 
@@ -262,7 +256,5 @@ export function useMusicPlayer() {
         togglePlay,
         addSongToPlaylist,
         openPlaylistDetail,
-        closePlaylistDetail,
-
     }
 }

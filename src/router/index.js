@@ -40,6 +40,11 @@ const routes = [
         name: '歌单详情',
         component: () => import('@/PlayList/SongsPlayList.vue'),
         props: true
+    },
+    {
+        path: '/LoginDialog',
+        name: '登录/注册界面',
+        component: () => import('@/components/LoginDialog.vue')
     }
 ]
 
