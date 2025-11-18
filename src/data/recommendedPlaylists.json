@@ -1,0 +1,50 @@
+{
+    "playlists": [
+        {
+            "id": 1,
+            "name": "每日推荐",
+            "cover": "/src/assets/images/music1.jpg",
+            "description": "精选每日推荐歌曲,开启美好一天",
+            "songs": [
+                {
+                    "id": 101,
+                    "title": "跳楼机",
+                    "artist": "LBI利比",
+                    "cover": "/src/assets/images/songs/free_fall.jpg",
+                    "url": "/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg",
+                    "duration": "03:21"
+                },
+                {
+                    "id": 102,
+                    "title": "像晴天像雨天",
+                    "artist": "汪苏泷",
+                    "cover": "/src/assets/images/music1.jpg",
+                    "url": "/src/assets/music/汪苏泷 - 像晴天像雨天.flac",
+                    "duration": "03:56"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "私人雷达",
+            "cover": "/src/assets/images/music2.jpg",
+            "description": "私人雷达，发现更多好音乐",
+            "songs": [
+                {
+                    "id": 201,
+                    "title": "热浪与海风",
+                    "artist": "夏日乐队",
+                    "cover": "/src/assets/images/music2.jpg",
+                    "url": "/src/assets/music/夏日乐队 - 热浪与海风.mp3"
+                },
+                {
+                    "id": 202,
+                    "title": "夏日回忆",
+                    "artist": "海岸线乐队",
+                    "cover": "/src/assets/images/music2.jpg",
+                    "url": "/src/assets/music/海岸线乐队 - 夏日回忆.mp3"
+                }
+            ]
+        }
+    ]
+}

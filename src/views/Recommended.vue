@@ -1,11 +1,15 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted,computed } from 'vue'
+import { qqMusicApi } from '../services/qqMusicApi'
 
 // 用户名
 const username = ref('Kam')
 // 注入推荐歌单列表和打开歌单详情方法
 const recommendedPlaylists = inject('recommendedPlaylists')
 const openPlaylistDetail = inject('openPlaylistDetail')
+
+const qqMusicPlaylists = ref([])
+const isLoading = ref(false)
 
 // 处理歌单点击
 const handlePlaylistClick = (playlist) => {
@@ -16,6 +20,30 @@ const handlePlaylistClick = (playlist) => {
 const getCoverImage = (playlist) => {
     return playlist.cover || require('@/assets/images/');
 }
+
+const loadQQMusicData = async () => {
+    isLoading.value = true
+    try {
+        const jayChouPlaylist = await qqMusicApi.getJayChouPlaylist()
+        qqMusicPlaylists.value = [jayChouPlaylist]
+    } catch (error) {
+        console.error('加载数据失败', error);
+
+    } finally {
+        isLoading.value = false
+    }
+}
+
+const allPlaylists = computed(() => {
+    return [
+        ...qqMusicPlaylists.value,
+        ...(recommendedPlaylists?.value || [])
+    ]
+})
+
+onMounted(async () => {
+    await loadQQMusicData()
+})
 </script>
 
 <template>
@@ -26,13 +54,16 @@ const getCoverImage = (playlist) => {
 
         <!-- 推荐卡片区域 -->
         <div class="playlists-grid">
-            <div v-for="playlist in recommendedPlaylists" :key="playlist.id" class="playlist-card"
+            <div v-for="playlist in allPlaylists" :key="playlist.id" class="playlist-card"
                 @click="handlePlaylistClick(playlist)">
                 <!-- 封面图片 -->
                 <div class="card-cover">
                     <img :src="getCoverImage(playlist)" alt="歌单封面">
                     <div class="playlist-stats">
                         <span>{{ playlist.songs?.length || 0 }} 首</span>
+                    </div>
+                    <div v-if="playlist.id === 3" class="qq-music-badge">
+                        QQ音乐
                     </div>
                 </div>
 

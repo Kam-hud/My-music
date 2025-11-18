@@ -1,3 +1,4 @@
+import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -42,9 +43,14 @@ const routes = [
         props: true
     },
     {
-        path: '/LoginDialog',
-        name: '登录/注册界面',
-        component: () => import('@/components/LoginDialog.vue')
+        path: '/login',
+        name: '登录/注册',
+        component: () => import('@/components/login.vue')
+    },
+    {
+        path: '/bgColor',
+        name: '主题',
+        component: () => import('@/views/BgColor.vue')
     }
 ]
 

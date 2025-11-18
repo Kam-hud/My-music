@@ -1,61 +1,69 @@
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue'
 
 export function useBackgroundColor() {
-    const backgroundColor = ref('#0a0a1a'); // 默认深色背景
-    const textColor = ref('#ffffff'); // 默认白色文本
+    const backgroundColor = ref('#0a0a1a')
+    const backgroundImage = ref('')
+    const textColor = ref('#ffffff')
+    const backgroundType = ref('color')
 
-    // 计算颜色亮度（0-255）
-    const calculateLuminance = (color) => {
-        // 处理6位和3位十六进制颜色
-        let hex = color.replace('#', '');
-        if (hex.length === 3) {
-            hex = hex.split('').map(char => char + char).join('');
+    // 保存设置到本地存储
+    const saveToLocalStorage = () => {
+        const settings = {
+            backgroundColor: backgroundColor.value,
+            backgroundImage: backgroundImage.value,
+            backgroundType: backgroundType.value,
+            textColor: textColor.value
         }
+        localStorage.setItem("themeSettings", JSON.stringify(settings))
+    }
 
-        // 转换为RGB值
-        const r = parseInt(hex.substring(0, 2), 16) / 255;
-        const g = parseInt(hex.substring(2, 4), 16) / 255;
-        const b = parseInt(hex.substring(4, 6), 16) / 255;
+    // 从本地存储加载设置
+    const loadFromLocalStorage = () => {
+        const saved = localStorage.getItem("themeSettings")
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved)
+                backgroundColor.value = settings.backgroundColor || '#0a0a1a'
+                backgroundImage.value = settings.backgroundImage || ''
+                backgroundType.value = settings.backgroundType || 'color'
+                textColor.value = settings.textColor || '#ffffff'
+            } catch (error) {
+                console.error('加载失败', error);
+            }
+        }
+    }
 
-        // 计算相对亮度（WCAG标准）
-        const rSRGB = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-        const gSRGB = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-        const bSRGB = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
-
-        return 0.2126 * rSRGB + 0.7152 * gSRGB + 0.0722 * bSRGB;
-    };
-
-    // 根据背景色自动选择文本颜色
-    const getContrastTextColor = (bgColor) => {
-        const luminance = calculateLuminance(bgColor);
-        // 根据亮度阈值选择文本颜色（0.179是WCAG建议值）
-        return luminance > 0.179 ? '#000000' : '#ffffff';
-    };
-
-    // 改变背景颜色
     const changeBackgroundColor = (color) => {
-        backgroundColor.value = color;
-        textColor.value = getContrastTextColor(color);
+        backgroundColor.value = color
+        backgroundType.value = 'color'
+        backgroundImage.value = ''
+        // 根据背景颜色调整文字颜色
+        textColor.value = color === '#ffffff' ? '#333333' : '#ffffff'
+        saveToLocalStorage()
+    }
 
-        // 保存到localStorage
-        localStorage.setItem('backgroundColor', color);
-        localStorage.setItem('textColor', textColor.value);
-    };
+    const changeBackgroundImage = (imageUrl) => {
+        backgroundImage.value = imageUrl
+        backgroundType.value = 'image'
+        textColor.value = '#ffffff'
+        saveToLocalStorage()
+    }
 
-    // 初始化时加载保存的颜色
-    onMounted(() => {
-        const savedBgColor = localStorage.getItem('backgroundColor');
-        const savedTextColor = localStorage.getItem('textColor');
+    const clearBackground = () => {
+        backgroundImage.value = ''
+        backgroundType.value = 'color'
+        changeBackgroundColor('#0a0a1a')
+    }
 
-        if (savedBgColor) {
-            backgroundColor.value = savedBgColor;
-            textColor.value = savedTextColor || getContrastTextColor(savedBgColor);
-        }
-    });
+    loadFromLocalStorage()
 
     return {
         backgroundColor,
+        backgroundImage,
+        backgroundType,
         textColor,
-        changeBackgroundColor
-    };
+        changeBackgroundColor,
+        changeBackgroundImage,
+        clearBackground
+    }
 }

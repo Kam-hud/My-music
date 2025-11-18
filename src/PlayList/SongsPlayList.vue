@@ -3,18 +3,24 @@ import { inject } from 'vue';
 
 // 注入共享状态和方法
 const currentPlaylist = inject('currentPlaylist');
+const currentSong = inject('currentSong')
 const playSong = inject('playSong');
 const addSongToPlaylist = inject('addSongToPlaylist');
-
 const likeSong = inject('likeSong');
 const isLiked = inject('isLiked');
-
 const downloadSong = inject('downloadSong');
 
 // 处理歌曲点击
 const handleSongClick = (song) => {
+    console.log('点击歌曲', song);
+    console.log('当前播放歌曲',playSong);
+
+    // 如果是同一首歌，强制重置进度
+    const isSameSong = currentSong.value.id === song.id
+    // 确保歌曲添加到播放列表
     addSongToPlaylist(song);
-    playSong(song);
+    // 播放歌曲
+    playSong(song,isSameSong);
 };
 
 </script>
@@ -27,7 +33,7 @@ const handleSongClick = (song) => {
                     <h2>{{ currentPlaylist.name }}</h2>
                     <p>{{ currentPlaylist.description }}</p>
                     <div class="playlist-stats">
-                        <span>歌曲{{ currentPlaylist.songs.length }}</span>
+                        <span>歌曲{{ currentPlaylist.songs?.length || 0 }}</span>
                     </div>
                 </div>
             </div>
@@ -65,10 +71,8 @@ const handleSongClick = (song) => {
 
 <style lang="scss" scoped>
 .playlist-detail {
-    position: absolute;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    position: relative;
+    z-index: 10;
     padding: 20px;
     overflow: auto;
     border-radius: 16px;

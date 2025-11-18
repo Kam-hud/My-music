@@ -1,0 +1,24 @@
+{
+    "presetColors": [
+        {
+            "id": 1,
+            "url": "/src/assets/images/background/bg1.jpg",
+            "name": "流萤"
+        },
+        {
+            "id": 2,
+            "url": "/src/assets/images/background/bg2.jpg",
+            "name": "黄泉"
+        },
+        {
+            "id": 3,
+            "url": "/src/assets/images/background/bg3.jpg",
+            "name": "遐蝶"
+        },
+        {
+            "id": 4,
+            "url": "/src/assets/images/background/bg4.jpg",
+            "name": "海瑟音"
+        }
+    ]
+}

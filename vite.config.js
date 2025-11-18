@@ -10,6 +10,16 @@ export default defineConfig({
         },
     },
     server: {
-        historyApiFallback: true
+        historyApiFallback: true,
+        proxy: {
+            '/qqmusic': {
+                target: 'https://c.y.qq.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/qqmusic/, ''),
+                headers: {
+                    Referer: 'https://y.qq.com/'
+                }
+            }
+        }
     }
 });
