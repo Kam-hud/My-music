@@ -81,107 +81,101 @@ onMounted(async () => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    height: calc(100vh - 90px);
-    border-radius: 8px;
+    padding: 16px;
+    height: 100%;
     box-sizing: border-box;
 
     .title {
-        font-size: 32px;
+        font-size: 28px;
         margin-bottom: 8px;
     }
 
     .subtitle {
-        font-size: 24px;
-        margin-bottom: 24px;
+        font-size: 18px;
+        margin-bottom: 20px;
         opacity: 0.9;
     }
 
-    /* 卡片网格布局 */
     .playlists-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
 
         .playlist-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
 
             &:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+                transform: translateY(-4px);
             }
 
-            /* 封面样式 */
             .card-cover {
                 position: relative;
-                height: 180px;
-                overflow: hidden;
+                height: 140px;
 
                 img {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    transition: transform 0.5s ease;
-                }
-
-                &:hover img {
-                    transform: scale(1.05);
                 }
 
                 .playlist-stats {
                     position: absolute;
-                    bottom: 10px;
-                    right: 10px;
+                    bottom: 8px;
+                    right: 8px;
                     background: rgba(0, 0, 0, 0.7);
                     color: white;
-                    padding: 4px 8px;
-                    border-radius: 12px;
-                    font-size: 12px;
+                    padding: 3px 6px;
+                    border-radius: 8px;
+                    font-size: 10px;
                 }
             }
 
             .card-content {
-                padding: 15px;
+                padding: 12px;
 
                 h3 {
-                    margin: 0 0 8px 0;
-                    font-size: 16px;
+                    margin: 0 0 6px 0;
+                    font-size: 14px;
                     font-weight: 600;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
-                    min-height: 44px;
+                    min-height: 40px;
                 }
 
                 p {
                     margin: 0;
-                    font-size: 13px;
+                    font-size: 12px;
                     opacity: 0.8;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
-                    min-height: 38px;
+                    min-height: 32px;
                 }
             }
         }
     }
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .playlists-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+@media screen and (min-width: 769px) {
+    .recommended {
+        padding: 20px;
+        
+        .playlists-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
 
-        .playlist-card .card-cover {
-            height: 140px;
+            .playlist-card .card-cover {
+                height: 180px;
+            }
         }
     }
 }

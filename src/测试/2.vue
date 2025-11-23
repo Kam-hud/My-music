@@ -2,6 +2,7 @@
 import { ref, provide } from "vue";
 import Sidebar from "@/components/Sidebar.vue";
 import MusicPlayer from "@/components/MusicPlayer.vue";
+import Setting from "@/components/Setting.vue";
 import SongsPlayList from "@/PlayList/SongsPlayList.vue";
 import { useBackgroundColor } from "@/Composables/useBackgroundColor";
 import { useMusicPlayer } from "@/Composables/useMusicPlayer";
@@ -117,9 +118,10 @@ provide("isSidebarCollapsed", isSidebarCollapsed);
             @change-background="handleBackgroundChange" />
 
         <div class="main" :style="{ marginLeft: isSidebarCollapsed ? '64px' : '224px' }">
-            <MusicPlayer />
+            <Setting />
+            <MusicPlayer :isCollapsed="isSidebarCollapsed" />
             <SongsPlayList v-if="showPlaylistDetail && currentRoute.path.startsWith('/playlist/')" />
-            <router-view v-else class="page-content"></router-view>
+            <router-view v-else style="padding: 20px; height: 100%"></router-view>
         </div>
     </div>
 </template>
@@ -127,9 +129,8 @@ provide("isSidebarCollapsed", isSidebarCollapsed);
 <style lang="scss" scoped>
 #app {
     display: flex;
-    flex-direction: column;
     height: 100vh;
-    
+
     &::before {
         content: '';
         position: fixed;
@@ -149,39 +150,25 @@ provide("isSidebarCollapsed", isSidebarCollapsed);
 }
 
 .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    padding: 0 10px;
-    transition: margin-left 0.3s ease;
-}
-
-.page-content {
+    position: relative;
     flex: 1;
     overflow: auto;
-    padding: 16px;
-}
+    height: calc(100vh - 110px);
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease;
+    padding: 0 10px;
+    z-index: 1;
 
-@media screen and (min-width: 769px) {
-    #app {
-        flex-direction: row;
-    }
-    
-    .main {
-        margin-left: 224px;
-        transition: margin-left 0.3s ease;
+    /* 隐藏所有滚动条 */
+    &::-webkit-scrollbar {
+        display: none;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .page-content {
-        padding: 12px;
-        padding-bottom: 140px;
-    }
-    .main{
-        margin-left: 0px!important;
+    .main {
+        margin-left: 0;
+        padding: 0 5px;
     }
 }
 </style>

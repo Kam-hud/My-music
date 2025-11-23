@@ -13,14 +13,14 @@ const downloadSong = inject('downloadSong');
 // 处理歌曲点击
 const handleSongClick = (song) => {
     console.log('点击歌曲', song);
-    console.log('当前播放歌曲',playSong);
+    console.log('当前播放歌曲', playSong);
 
     // 如果是同一首歌，强制重置进度
     const isSameSong = currentSong.value.id === song.id
     // 确保歌曲添加到播放列表
     addSongToPlaylist(song);
     // 播放歌曲
-    playSong(song,isSameSong);
+    playSong(song, isSameSong);
 };
 
 </script>
@@ -40,30 +40,37 @@ const handleSongClick = (song) => {
         </div>
 
         <div class="songs-list">
+            <!-- 列表表头 -->
             <div class="list-header">
-                <div class="header-cover">歌曲封面</div>
-                <div class="header-title">歌曲/歌手</div>
-                <div class="header-duration">时长</div>
-                <div class="header-actions">操作</div>
+                <div class="header-item header-cover">歌曲封面</div>
+                <div class="header-item header-title">歌曲/歌手</div>
+                <div class="header-item header-album">专辑</div>
+                <div class="header-item header-duration">时长</div>
             </div>
 
-            <div v-for="song in currentPlaylist.songs" :key="song.id" class="song-item" @click="handleSongClick(song)">
+            <div v-for="song in currentPlaylist.songs" :key="song.id" class="song-item" @click="handleSongClick(song)"
+                :class="{ 'active': currentSong && currentSong.id === song.id}">
                 <div class="song-cover">
                     <img :src="song.cover" alt="歌曲封面" />
                 </div>
                 <div class="song-info">
-                    <div class="song-title">{{ song.title }}</div>
-                    <div class="song-artist">{{ song.artist }}</div>
+                    <div class="song-info-content">
+                        <div class="song-title">{{ song.title }}</div>
+                        <div class="song-artist">{{ song.artist }}</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="like-btn" :class="{ 'active': isLiked(song.id) }" @click.stop="likeSong(song)">
+                            <font-awesome-icon icon="heart" />
+                        </button>
+                        <button class="download-btn" @click.stop="downloadSong(song)">
+                            <font-awesome-icon icon="download" />
+                        </button>
+                    </div>
+                </div>
+                <div class="song-album">
+                    {{ song.album || '未知专辑' }}
                 </div>
                 <div class="song-duration">{{ song.duration || '00:00:00' }}</div>
-                <div class="song-actions">
-                    <button class="action-btn" :class="{ 'active': isLiked(song.id) }" @click.stop="likeSong(song)">
-                        <font-awesome-icon icon="heart" />
-                    </button>
-                    <button class="action-btn" @click.stop="downloadSong(song)">
-                        <font-awesome-icon icon="download" />
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -71,12 +78,9 @@ const handleSongClick = (song) => {
 
 <style lang="scss" scoped>
 .playlist-detail {
-    position: relative;
-    z-index: 10;
     padding: 20px;
     overflow: auto;
     border-radius: 16px;
-    box-sizing: border-box;
     height: calc(100vh - 110px);
 
     &::-webkit-scrollbar {
@@ -84,8 +88,6 @@ const handleSongClick = (song) => {
     }
 
     .playlist-header {
-        display: flex;
-        flex-direction: column;
         margin-bottom: 30px;
 
         .playlist-info {
@@ -116,121 +118,243 @@ const handleSongClick = (song) => {
         margin-bottom: 25px;
 
         .list-header {
-            display: flex;
+            display: grid;
+            grid-template-columns: 80px 2fr 1.5fr 100px;
             align-items: center;
             padding: 15px 20px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-            .header-cover {
-                width: 80px;
-                text-align: center;
-            }
+            .header-item {
+                &.header-album,&.header-title {
+                    padding-left: 20px;
+                }
 
-            .header-title {
-                flex: 2;
-                padding-left: 20px;
-                text-align: left;
-            }
-
-            .header-duration {
-                width: 100px;
-                text-align: center;
-            }
-
-            .header-actions {
-                width: 120px;
-                text-align: center;
+                &.header-duration {
+                    text-align: center;
+                }
             }
         }
 
         .song-item {
-            display: flex;
+            display: grid;
+            grid-template-columns: 80px 2fr 1.5fr 100px;
             align-items: center;
             padding: 12px 20px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
 
             &:hover {
-                background: rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.1);
+
+                .song-info{
+                    .song-actions{
+                        .download-btn{
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+
+            &.active {
+                background: rgba(232, 185, 170, 0.2);
+                border-left: 3px solid #e8b9aa;
+
+                .song-title {
+                    color: #e8b9aa;
+                }
             }
 
             .song-cover {
-                width: 80px;
-                height: 80px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                overflow: visible;
+                width: 50px;
+                height: 50px;
+                border-radius: 8px;
+                overflow: hidden;
 
                 img {
-                    width: 60px;
-                    height: 60px;
+                    width: 100%;
+                    height: 100%;
                     object-fit: cover;
-                    border-radius: 8px;
                 }
             }
 
             .song-info {
-                flex: 2;
-                padding-left: 20px;
-                text-align: left;
-
-                .song-title {
-                    font-size: 16px;
-                    font-weight: 500;
-                    margin-bottom: 5px;
-                }
-
-                .song-artist {
-                    font-size: 14px;
-                    color: rgba(255, 255, 255, 0.7);
-                }
-            }
-
-            .song-duration {
-                width: 100px;
-                text-align: center;
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 14px;
-            }
-
-            .song-actions {
-                width: 120px;
-                text-align: center;
                 display: flex;
-                justify-content: center;
-                gap: 15px;
+                justify-content: space-between;
+                align-items: center;
+                padding-left: 20px;
+                min-width: 0;
 
-                .action-btn {
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                    border: none;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.2);
-                        transform: scale(1.1);
+                .song-info-content {
+                    .song-title {
+                        font-size: 16px;
+                        font-weight: 500;
+                        margin-bottom: 4px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
 
-                    &.active {
-                        color: #e52e71;
+                    .song-artist {
+                        font-size: 14px;
+                        color: rgba(255, 255, 255, 0.7);
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
 
-                        &.like:hover {
-                            color: #ff6b9c;
+                .song-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+
+                    .like-btn {
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.5);
+                        cursor: pointer;
+                        padding: 8px;
+                        border-radius: 50%;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 40px;
+                        height: 40px;
+
+                        &:hover {
+                            background: rgba(255, 255, 255, 0.1);
+                            color: #ff6b6b;
+                            transform: scale(1.1);
+                        }
+
+                        &.active {
+                            color: #ff6b6b;
+                        }
+
+                        svg {
+                            font-size: 28px;
                         }
                     }
 
-                    &.download.active {
-                        color: #4cc9f0;
+                    .download-btn {
+                        border: none;
+                        background: none;
+                        color: rgba(255, 255, 255, 0.5);
+                        cursor: pointer;
+                        padding: 8px;
+                        border-radius: 50%;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 40px;
+                        height: 40px;
+                        opacity: 0;
+                        transform: scale(0.8);
 
                         &:hover {
-                            color: #7ad0f0;
+                            background: rgba(255, 255, 255, 0.1);
+                            color: #4fc3f7;
+                        }
+
+                        svg {
+                            font-size: 28px;
+                        }
+                    }
+                }
+            }
+
+            .song-album {
+                padding-left: 20px;
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.7);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .song-duration {
+                text-align: center;
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .playlist-detail {
+        padding: 12px;
+        height: calc(100vh - 140px); // 调整高度适应移动端布局
+
+        .playlist-header {
+            margin-bottom: 20px;
+
+            .playlist-info .playlist-text {
+                h2 {
+                    font-size: 24px;
+                }
+                
+                p {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .songs-list {
+            .list-header {
+                grid-template-columns: 50px 1fr 60px;
+                
+                .header-album,
+                .header-duration {
+                    display: none;
+                }
+            }
+
+            .song-item {
+                grid-template-columns: 50px 1fr 60px;
+                padding: 10px 12px;
+
+                .song-cover {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .song-album,
+                .song-duration {
+                    display: none;
+                }
+
+                .song-info {
+                    padding-left: 12px;
+
+                    .song-info-content {
+                        .song-title {
+                            font-size: 15px;
+                        }
+                        
+                        .song-artist {
+                            font-size: 13px;
+                        }
+                    }
+
+                    .song-actions {
+                        gap: 4px;
+
+                        .like-btn,
+                        .download-btn {
+                            width: 36px;
+                            height: 36px;
+                            
+                            svg {
+                                font-size: 20px;
+                            }
                         }
                     }
                 }

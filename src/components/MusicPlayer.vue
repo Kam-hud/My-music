@@ -738,12 +738,21 @@ onUnmounted(() => {
 // 响应式设计
 @media screen and (max-width: 768px) {
     .floating-music-player {
-        width: 95%;
-        bottom: 10px;
-        padding: 10px 16px;
+        position: fixed;
+        bottom: 60px; // 在移动端底部导航上方
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+        transform: none;
+        padding: 10px 12px;
+
+        &.expanded {
+            transform: none;
+        }
 
         .player-content {
-            gap: 12px;
+            gap: 8px;
 
             .song-info {
                 .time-display {
@@ -776,40 +785,9 @@ onUnmounted(() => {
         }
 
         .floating-panel {
-            width: 300px;
-            right: 10px;
-        }
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .floating-music-player {
-        .player-content {
-            flex-wrap: wrap;
-            gap: 8px;
-
-            .song-info {
-                order: 1;
-                flex: 1 0 100%;
-                margin-bottom: 8px;
-            }
-
-            .player-controls {
-                order: 2;
-                flex: 1;
-                justify-content: center;
-            }
-
-            .player-actions {
-                order: 3;
-                flex: 1;
-                justify-content: flex-end;
-            }
-        }
-
-        .floating-panel {
             width: calc(100vw - 40px);
-            right: 20px;
+            right: 10px;
+            max-height: 60vh;
         }
     }
 }

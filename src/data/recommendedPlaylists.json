@@ -12,6 +12,7 @@
                     "artist": "LBI利比",
                     "cover": "/src/assets/images/songs/free_fall.jpg",
                     "url": "/src/assets/music/LBI利比（时柏尘） - 跳楼机.ogg",
+                    "album": "跳楼机",
                     "duration": "03:21"
                 },
                 {
@@ -20,6 +21,7 @@
                     "artist": "汪苏泷",
                     "cover": "/src/assets/images/music1.jpg",
                     "url": "/src/assets/music/汪苏泷 - 像晴天像雨天.flac",
+                    "album": "像晴天像雨",
                     "duration": "03:56"
                 }
             ]

@@ -1,10 +1,14 @@
-import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
         path: '/',
         redirect: '/recommended'
+    },
+    {
+        path: '/my',
+        name: '我的',
+        component: () => import('@/views/MyHome.vue')
     },
     {
         path: '/recommended',
