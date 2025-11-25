@@ -222,7 +222,7 @@ onUnmounted(() => {
                     <font-awesome-icon icon="history" />
                 </button>
 
-                <button class="action-btn" @click="togglePlaylistPanel" title="播放列表">
+                <button class="player-list" @click="togglePlaylistPanel" title="播放列表">
                     <font-awesome-icon icon="list" />
                     <span class="badge" v-if="playlist.length > 0">{{ playlist.length }}</span>
                 </button>
@@ -551,6 +551,45 @@ onUnmounted(() => {
                     justify-content: center;
                 }
             }
+            
+            .player-list {
+                position: relative;
+                background: none;
+                border: none;
+                color: #666;
+                cursor: pointer;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background: rgba(0, 0, 0, 0.05);
+                    color: #333;
+                }
+
+                &.active {
+                    color: #ff6b6b;
+                }
+
+                .badge {
+                    position: absolute;
+                    top: -2px;
+                    right: -2px;
+                    background: #ff6b6b;
+                    color: white;
+                    font-size: 10px;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
         }
     }
 
@@ -777,9 +816,8 @@ onUnmounted(() => {
             .player-actions {
                 gap: 4px;
 
-                .action-btn {
-                    width: 28px;
-                    height: 28px;
+                .volume-control,.action-btn{
+                    display: none;
                 }
             }
         }

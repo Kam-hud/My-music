@@ -19,6 +19,16 @@
             "id": 4,
             "url": "/src/assets/images/background/bg4.jpg",
             "name": "海瑟音"
+        },
+        {
+            "id": 5,
+            "url": "/src/assets/images/background/千咲.jpg",
+            "name": "千咲"
+        },
+        {
+            "id": 6,
+            "url": "/src/assets/images/background/樱花.jpg",
+            "name": "樱花"
         }
     ]
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject, onMounted,computed } from 'vue'
-import { qqMusicApi } from '../services/qqMusicApi'
+// import { qqMusicApi } from '../services/qqMusicApi'
 
 // 用户名
 const username = ref('Kam')

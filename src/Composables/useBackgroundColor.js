@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export function useBackgroundColor() {
     const backgroundColor = ref('#0a0a1a')
@@ -33,12 +33,33 @@ export function useBackgroundColor() {
         }
     }
 
+    const getTextColorForImage = () => {
+        return new Promise((resolve) => {
+            resolve('#ffffff')
+        })
+    }
+
+    const getLuminance = (color) => {
+        if (color.startsWith('#')) {
+            const hex = color.replace('#', '')
+            const r = parseInt(hex.substr(0, 2), 16) / 255
+            const g = parseInt(hex.substr(2, 2), 16) / 255
+            const b = parseInt(hex.substr(4, 2), 16) / 255
+
+            const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+            return luminance
+        }
+        return 0.5 // 默认值
+    }
+
     const changeBackgroundColor = (color) => {
         backgroundColor.value = color
         backgroundType.value = 'color'
         backgroundImage.value = ''
         // 根据背景颜色调整文字颜色
-        textColor.value = color === '#ffffff' ? '#333333' : '#ffffff'
+        // textColor.value = color === '#ffffff' ? '#333333' : '#ffffff'
+        const luminance = getLuminance(color)
+        textColor.value = luminance > 0.6 ? '#333333' : '#ffffff'
         saveToLocalStorage()
     }
 
@@ -48,6 +69,15 @@ export function useBackgroundColor() {
         textColor.value = '#ffffff'
         saveToLocalStorage()
     }
+
+    const computedTextColor = computed(() => {
+        if (backgroundType.value === 'image') {
+            return '#ffffff'
+        } else {
+            const luminance = getLuminance(backgroundColor.value)
+            return luminance > 0.6 ? '#333333' : '#ffffff'
+        }
+    })
 
     const clearBackground = () => {
         backgroundImage.value = ''
@@ -61,9 +91,11 @@ export function useBackgroundColor() {
         backgroundColor,
         backgroundImage,
         backgroundType,
-        textColor,
+        computedTextColor,
+        textColor: computedTextColor,
         changeBackgroundColor,
         changeBackgroundImage,
         clearBackground
+
     }
 }

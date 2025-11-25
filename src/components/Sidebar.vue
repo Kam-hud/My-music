@@ -40,9 +40,29 @@ const checkLoginStatus = () => {
     }
 }
 
+const getAvatarUrl = (avatarPath) => { 
+    if (!avatarPath) return ''
+
+    if (avatarPath.startsWith('@/')) { 
+        return avatarPath.replace('@/','/src/')
+    }
+
+    return avatarPath
+}
+
 // 跳转到登录界面
 const goToLogin = () => {
     router.push('/login')
+}
+
+const handleAvatarClick = () => { 
+    if (isLoggedIn.value) {
+        if (confirm('确定要退出登录吗?')) {
+            logout()
+        }
+    } else { 
+        goToLogin()
+    }
 }
 
 const logout = () => {
@@ -67,10 +87,10 @@ const toggleCollapse = () => {
     emit('toggle-collapse', isCollapsed.value)
 }
 
-// 切换我的面板显示
-const toggleMyPanel = () => {
-    showMyPanel.value = !showMyPanel.value
-}
+// // 切换我的面板显示
+// const toggleMyPanel = () => {
+//     showMyPanel.value = !showMyPanel.value
+// }
 
 onMounted(() => {
     checkLoginStatus()
@@ -85,8 +105,8 @@ onMounted(() => {
         <!-- 用户区域 -->
         <div class="user-area">
             <div class="user-info" v-if="!isCollapsed">
-                <div class="avatar-container" @click="goToLogin">
-                    <img v-if="isLoggedIn && userInfo.avatar" :src="userInfo.avatar" alt="用户头像" class="user-avatar">
+                <div class="avatar-container" @click="handleAvatarClick">
+                    <img v-if="isLoggedIn && userInfo.avatar" :src="getAvatarUrl(userInfo.avatar)" alt="用户头像" class="user-avatar">
                     <div v-else class="default-avatar">
                         <font-awesome-icon icon="user" />
                     </div>
@@ -96,14 +116,12 @@ onMounted(() => {
                         <button @click="goToLogin" class="login-btn">点击登录</button>
                     </div>
                     <div v-else class="user-section">
-                        <div class="welcome-text">欢迎回来</div>
-                        <div class="username">{{ userInfo.name }}</div>
-                        <button @click="logout" class="logout-btn">退出登录</button>
+                        <div class="username" @click="logout">{{ userInfo.name }}</div>
                     </div>
                 </div>
             </div>
-            <div v-else class="collapsed-avatar" @click="goToLogin">
-                <img v-if="isLoggedIn && userInfo.avatar" :src="userInfo.avatar" alt="用户头像" class="user-avatar">
+            <div v-else class="collapsed-avatar" @click="handleAvatarClick">
+                <img v-if="isLoggedIn && userInfo.avatar" :src="getAvatarUrl(userInfo.avatar)" alt="用户头像" class="user-avatar">
                 <div v-else class="default-avatar">
                     <font-awesome-icon icon="user" />
                 </div>
