@@ -11,7 +11,8 @@ import {
     faAngleUp, faAngleDown, faTimes, faStepBackward, faPause,
     faStepForward, faPlay, faVolumeUp, faSync, faRepeat, faRandom,
     faArrowLeft, faArrowRight, faPalette, faList, faHistory, faTrash,
-    faSearch, faUser, faEye, faEyeSlash, faCheck, faImage, faUndo
+    faSearch, faUser, faEye, faEyeSlash, faCheck, faImage, faUndo, faRobot,
+    faSpinner, faPaperPlane, faLightbulb
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -19,7 +20,8 @@ library.add(
     faAngleDown, faAngleUp, faTimes, faStepBackward, faPause,
     faStepForward, faPlay, faVolumeUp, faSync, faRepeat, faRandom,
     faArrowLeft, faArrowRight, faPalette, faList, faHistory, faTrash,
-    faSearch, faUser, faEye, faEyeSlash, faCheck, faImage, faUndo
+    faSearch, faUser, faEye, faEyeSlash, faCheck, faImage, faUndo, faRobot,
+    faSpinner, faPaperPlane, faLightbulb
 )
 
 createApp(App)

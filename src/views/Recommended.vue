@@ -1,6 +1,5 @@
 <script setup>
-import { ref, inject, onMounted,computed } from 'vue'
-// import { qqMusicApi } from '../services/qqMusicApi'
+import { ref, inject, computed } from 'vue'
 
 // 用户名
 const username = ref('Kam')
@@ -8,8 +7,27 @@ const username = ref('Kam')
 const recommendedPlaylists = inject('recommendedPlaylists')
 const openPlaylistDetail = inject('openPlaylistDetail')
 
-const qqMusicPlaylists = ref([])
-const isLoading = ref(false)
+// 复制歌单数据
+const copyPlaylists = (playlists, count) => {
+    const copySong = []
+    for (let i = 0; i < count; i++) {
+        playlists.forEach(playlist => {
+            const newPlaylist = {
+                ...playlist,
+                id: playlist.id + (i + 1) * 100,
+                name: `${playlist.name} ${i + 1}`,
+                description: `${playlist.description} (副本${i + 1})`
+            }
+            copySong.push(newPlaylist)
+        });
+    }
+    return [...playlists, ...copySong]
+}
+
+// 使用复制过后的歌单数据
+const displayedPlaylists = computed(() => {
+    return copyPlaylists(recommendedPlaylists.value, 5)
+})
 
 // 处理歌单点击
 const handlePlaylistClick = (playlist) => {
@@ -20,30 +38,6 @@ const handlePlaylistClick = (playlist) => {
 const getCoverImage = (playlist) => {
     return playlist.cover || require('@/assets/images/');
 }
-
-const loadQQMusicData = async () => {
-    isLoading.value = true
-    try {
-        const jayChouPlaylist = await qqMusicApi.getJayChouPlaylist()
-        qqMusicPlaylists.value = [jayChouPlaylist]
-    } catch (error) {
-        console.error('加载数据失败', error);
-
-    } finally {
-        isLoading.value = false
-    }
-}
-
-const allPlaylists = computed(() => {
-    return [
-        ...qqMusicPlaylists.value,
-        ...(recommendedPlaylists?.value || [])
-    ]
-})
-
-onMounted(async () => {
-    await loadQQMusicData()
-})
 </script>
 
 <template>
@@ -54,22 +48,23 @@ onMounted(async () => {
 
         <!-- 推荐卡片区域 -->
         <div class="playlists-grid">
-            <div v-for="playlist in allPlaylists" :key="playlist.id" class="playlist-card"
+            <div v-for="playlist in displayedPlaylists" :key="playlist.id" class="playlist-card"
                 @click="handlePlaylistClick(playlist)">
                 <!-- 封面图片 -->
                 <div class="card-cover">
                     <img :src="getCoverImage(playlist)" alt="歌单封面">
                     <div class="playlist-stats">
-                        <span>{{ playlist.songs?.length || 0 }} 首</span>
-                    </div>
-                    <div v-if="playlist.id === 3" class="qq-music-badge">
-                        QQ音乐
+                        {{ playlist.songs?.length || 0 }} 首
                     </div>
                 </div>
 
                 <div class="card-content">
-                    <h3>{{ playlist.name }}</h3>
-                    <p>{{ playlist.description }}</p>
+                    <h3>
+                        {{ playlist.name }}
+                    </h3>
+                    <p>
+                        {{ playlist.description }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -82,8 +77,14 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     padding: 16px;
-    height: 100%;
     box-sizing: border-box;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     .title {
         font-size: 28px;
@@ -168,7 +169,7 @@ onMounted(async () => {
 @media screen and (min-width: 769px) {
     .recommended {
         padding: 20px;
-        
+
         .playlists-grid {
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;

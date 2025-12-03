@@ -139,8 +139,8 @@ onMounted(() => {
                         <span class="item-text">推荐</span>
                     </router-link>
                     <router-link to="/winnow" :class="{ active: isActive('/winnow') }" class="sidebar-item">
-                        <font-awesome-icon icon="gem" class="sidebar-icon" />
-                        <span class="item-text">精选</span>
+                        <font-awesome-icon icon="robot" class="sidebar-icon" />
+                        <span class="item-text">AI</span>
                     </router-link>
                 </nav>
             </div>

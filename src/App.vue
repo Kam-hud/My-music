@@ -2,10 +2,13 @@
 import { ref, provide } from "vue";
 import Sidebar from "@/components/Sidebar.vue";
 import MusicPlayer from "@/components/MusicPlayer.vue";
+import Setting from "./components/Setting.vue";
+import SearchResults from '@/components/SearchResults.vue'
 import SongsPlayList from "@/PlayList/SongsPlayList.vue";
 import { useBackgroundColor } from "@/Composables/useBackgroundColor";
 import { useMusicPlayer } from "@/Composables/useMusicPlayer";
 import { useLikeMusic } from "@/Composables/useLikeMusic";
+import { useSearch } from "./Composables/useSearch";
 import { useRoute } from 'vue-router'
 
 const currentRoute = useRoute()
@@ -46,6 +49,16 @@ const {
     playMode,
     togglePlayMode
 } = useMusicPlayer();
+
+//搜索功能
+const {
+    searchQuery,
+    searchResults,
+    isSearching,
+    performSearch,
+    clearSearch
+} = useSearch(recommendedPlaylists, playlist, playHistory)
+
 
 const { likeSonglist, likeSong, downloadSong, isLiked } = useLikeMusic();
 
@@ -100,6 +113,13 @@ provide("changeBackgroundImage", changeBackgroundImage);
 provide("clearBackground", clearBackground);
 
 provide("isSidebarCollapsed", isSidebarCollapsed);
+
+// 搜索相关内容
+provide("searchQuery", searchQuery);
+provide("searchResults", searchResults);
+provide("isSearching", isSearching);
+provide("performSearch", performSearch);
+provide("clearSearch", clearSearch);
 </script>
 
 <template>
@@ -116,8 +136,9 @@ provide("isSidebarCollapsed", isSidebarCollapsed);
             :isCollapsed="isSidebarCollapsed" @toggle-collapse="handleCollapseChange"
             @change-background="handleBackgroundChange" />
 
-        <div class="main" :style="{ marginLeft: isSidebarCollapsed ? '64px' : '224px' }">
+        <div class="main" :style="{ marginLeft: isSidebarCollapsed ? '64px' : '224px' }">  
             <MusicPlayer />
+            <Setting></Setting>
             <SongsPlayList v-if="showPlaylistDetail && currentRoute.path.startsWith('/playlist/')" />
             <router-view v-else class="page-content"></router-view>
         </div>
@@ -152,7 +173,7 @@ provide("isSidebarCollapsed", isSidebarCollapsed);
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - 120px);
     overflow: hidden;
     padding: 0 10px;
     transition: margin-left 0.3s ease;

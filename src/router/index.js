@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
     {
         path: '/',
-        redirect: '/recommended'
+        // redirect: '/recommended'
+        redirect: '/winnow'
     },
     {
         path: '/my',
@@ -55,6 +56,11 @@ const routes = [
         path: '/bgColor',
         name: '主题',
         component: () => import('@/views/BgColor.vue')
+    },
+    {
+        path: '/search',
+        name: '搜索',
+        component: () => import('@/views/SearchView.vue')
     }
 ]
 
