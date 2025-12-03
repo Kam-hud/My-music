@@ -55,7 +55,7 @@ const routes = [
     {
         path: '/bgColor',
         name: '主题',
-        component: () => import('@/views/BgColor.vue')
+        component: () => import('@/views/bgColor.vue')
     },
     {
         path: '/search',
