@@ -1,5 +1,5 @@
 <script setup>
-// 歌单卡片：封面 + 播放量 + 悬浮播放按钮
+// 歌单卡片（重构版）：封面圆角 18px + 右下角播放量 + 悬浮播放按钮
 import Icon from './Icon.vue'
 import { formatCount } from '../utils/format'
 
@@ -20,10 +20,7 @@ const emit = defineEmits(['open', 'play'])
           <Icon name="play" :size="18" />
         </button>
       </div>
-      <span v-if="playlist.playCount" class="card-count">
-        <Icon name="play" :size="10" />
-        {{ formatCount(playlist.playCount) }}
-      </span>
+      <span v-if="playlist.playCount" class="card-count">{{ formatCount(playlist.playCount) }}</span>
     </div>
     <div class="card-name" :title="playlist.name">{{ playlist.name }}</div>
     <div v-if="playlist.description" class="card-desc">{{ playlist.description }}</div>
@@ -39,7 +36,7 @@ const emit = defineEmits(['open', 'play'])
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
   background: linear-gradient(135deg, rgba(124, 108, 240, 0.32), rgba(90, 167, 255, 0.18));
   display: flex;
@@ -66,7 +63,7 @@ const emit = defineEmits(['open', 'play'])
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 22, 0.42);
+  background: rgba(10, 7, 20, 0.42);
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -96,19 +93,15 @@ const emit = defineEmits(['open', 'play'])
   transform: translateY(0);
 }
 
+/* 播放量：右下角，参考图样式 */
 .card-count {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  right: 10px;
+  bottom: 8px;
+  font-size: 11.5px;
   color: #fff;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
 }
 
 .card-name {

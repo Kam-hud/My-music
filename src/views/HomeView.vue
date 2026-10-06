@@ -1,8 +1,12 @@
 <script setup>
-// 首页：搜索入口 + 打开歌单 + 推荐歌单 + 背景特效设置
-import { ref, onMounted } from 'vue'
+/**
+ * 首页（重构版）
+ * 结构：欢迎条「Hi Kam 今日为你推荐」+ 4 张横排推荐卡 + 「你的私存歌单」横向滚动区
+ * 数据：全部来自项目真实接口 /api/toplist（网易云精选歌单），不使用参考图中的演示假数据
+ * 次要入口：「打开指定歌单」输入框与「背景特效」面板收纳进折叠区，功能与原实现一致
+ */
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import SearchBar from '../components/SearchBar.vue'
 import SongCard from '../components/SongCard.vue'
 import Icon from '../components/Icon.vue'
 import { getToplist } from '../api'
@@ -12,13 +16,26 @@ import { extractPlaylistId } from '../utils/format'
 
 const router = useRouter()
 const player = usePlayer()
+const { state } = player
 
-const keyword = ref('')
 const playlistInput = ref('')
 const playlists = ref([])
 const loading = ref(true)
 const error = ref('')
 const downloading = ref(false)
+const toolsOpen = ref(false)
+
+// 4 张横排推荐卡：取真实榜单前 4 张
+const recommendCards = computed(() => playlists.value.slice(0, 4))
+// 你的私存歌单：真实歌单全量横向滚动
+const savedPlaylists = computed(() => playlists.value)
+
+// 欢迎条副标题：用真实统计数据渲染（歌单数量 / 收藏数量）
+const welcomeSub = computed(() => {
+  if (loading.value) return '正在同步你的音乐数据…'
+  if (error.value) return '服务未连接，暂时无法获取推荐数据'
+  return `为你精选 ${playlists.value.length} 组歌单 · 已收藏 ${state.likedSongs.length} 首`
+})
 
 async function loadToplist() {
   loading.value = true
@@ -34,21 +51,18 @@ async function loadToplist() {
   }
 }
 
-function doSearch(kw) {
-  const k = (kw || '').trim()
-  if (!k) {
-    router.push('/search')
-    return
-  }
-  router.push({ path: '/search', query: { kw: k } })
-}
-
 function openPlaylist(id) {
   router.push(`/playlist/${id}`)
 }
 
 function playPlaylist(id) {
   router.push({ path: `/playlist/${id}`, query: { autoplay: '1' } })
+}
+
+function openReport() {
+  // 听歌报告页尚未上线：先跳到收藏页，并明确告知用户
+  player.showToast('听歌报告暂未上线，先看看你收藏的歌吧', 'info')
+  router.push('/liked')
 }
 
 function openByInput() {
@@ -66,7 +80,7 @@ function onBlurInput(e) {
 
 async function onDownloadWallpaper() {
   if (!bgState.wallpaper) {
-    player.showToast('请先点播放条右侧的图片按钮，用当前封面作为壁纸', 'info')
+    player.showToast('请先点播放条上的「设为壁纸」按钮，用当前封面作为壁纸', 'info')
     return
   }
   downloading.value = true
@@ -90,18 +104,18 @@ onMounted(loadToplist)
 
 <template>
   <div class="home">
-    <!-- 顶部：标题 + 搜索 -->
-    <section class="hero">
-      <div class="hero-text">
-        <h1 class="hero-title">发现你的<span class="accent">声音</span></h1>
-        <p class="hero-sub">网易云 / QQ 双音源聚合搜索，即点即听</p>
+    <!-- 欢迎条 -->
+    <section class="welcome">
+      <div class="welcome-text">
+        <h1 class="welcome-title">
+          Hi Kam <span class="accent">今日为你推荐</span>
+        </h1>
+        <p class="welcome-sub">{{ welcomeSub }}</p>
       </div>
-      <div class="hero-search">
-        <SearchBar v-model="keyword" placeholder="搜索歌曲、歌手、专辑" @search="doSearch" />
-      </div>
-      <div class="hero-vinyl">
-        <div class="vinyl-disc"><span class="vinyl-hole" /></div>
-      </div>
+      <button class="welcome-link" @click="openReport">
+        查看你的听歌报告
+        <Icon name="chevron-right" :size="14" />
+      </button>
     </section>
 
     <!-- 服务未连接提示 -->
@@ -111,89 +125,63 @@ onMounted(loadToplist)
         <strong>{{ error }}</strong>
         <span>请确认已启动代理服务：在项目根目录执行 npm run server</span>
       </div>
-      <button class="thumb-btn" @click="loadToplist">重试</button>
+      <button class="ghost-btn" @click="loadToplist">重试</button>
     </div>
 
-    <!-- 工具行：打开歌单 + 背景设置 -->
-    <section class="tool-grid">
-      <div class="panel">
-        <div class="panel-head">
-          <Icon name="link" :size="15" />
-          <span>打开指定歌单</span>
-        </div>
-        <div class="panel-row">
-          <input
-            v-model="playlistInput"
-            class="field"
-            type="text"
-            placeholder="粘贴歌单 ID 或歌单链接"
-            @keyup.enter="openByInput"
-          />
-          <button class="primary-btn" @click="openByInput">打开</button>
-        </div>
-        <p class="panel-tip">例如 3778678，或 https://music.163.com/playlist?id=3778678</p>
-      </div>
+    <!-- 4 张横排推荐卡（真实榜单数据） -->
+    <section class="section">
+      <div class="rec-grid">
+        <template v-if="loading">
+          <div v-for="n in 4" :key="`sk-${n}`" class="rec-card rec-card--skeleton">
+            <div class="skeleton" />
+          </div>
+        </template>
 
-      <div class="panel">
-        <div class="panel-head">
-          <Icon name="sparkle" :size="15" />
-          <span>背景特效</span>
-        </div>
-        <div class="bg-row">
-          <span class="bg-label">模糊</span>
-          <input
-            class="range-slider bg-range"
-            type="range"
-            min="0"
-            max="40"
-            step="1"
-            :value="bgState.blur"
-            @input="onBlurInput"
-          />
-          <span class="bg-value tnum">{{ bgState.blur }}px</span>
-        </div>
-        <div class="bg-row">
-          <span class="bg-label">粒子</span>
-          <button class="switch" :class="{ 'switch--on': bgState.particles }" @click="toggleParticles()">
-            <span class="switch-knob" />
-          </button>
-          <span class="bg-value">{{ bgState.particles ? '已开启' : '已关闭' }}</span>
-        </div>
-        <div class="bg-actions">
-          <button class="ghost-btn" :disabled="downloading" @click="onDownloadWallpaper">
-            <Icon name="download" :size="14" />
-            {{ downloading ? '下载中' : '下载壁纸' }}
-          </button>
-          <button class="ghost-btn" @click="onResetBackground">
-            <Icon name="refresh" :size="14" />
-            重置背景
-          </button>
-        </div>
-        <p class="panel-tip">壁纸来源：播放条左侧「图片」按钮，一键把当前封面设为背景</p>
+        <template v-else>
+          <article
+            v-for="pl in recommendCards"
+            :key="pl.id"
+            class="rec-card"
+            :title="pl.name"
+            @click="openPlaylist(pl.id)"
+          >
+            <img v-if="pl.cover" class="rec-cover" :src="pl.cover" :alt="pl.name" loading="lazy" />
+            <div v-else class="rec-cover rec-cover--ph">♪</div>
+            <div class="rec-mask" />
+            <div class="rec-body">
+              <div class="rec-title">{{ pl.name }}</div>
+              <div class="rec-sub">{{ pl.playCount ? `播放 ${pl.playCount}` : '精选歌单' }}</div>
+            </div>
+            <button class="rec-play" title="播放" @click.stop="playPlaylist(pl.id)">
+              <Icon name="play" :size="16" />
+            </button>
+          </article>
+        </template>
       </div>
     </section>
 
-    <!-- 推荐歌单 -->
+    <!-- 你的私存歌单：横向滚动 -->
     <section class="section">
       <header class="section-head">
-        <h2 class="section-title">推荐歌单</h2>
+        <h2 class="section-title">你的私存歌单</h2>
         <button class="ghost-btn" @click="loadToplist">
           <Icon name="refresh" :size="14" />
           刷新
         </button>
       </header>
 
-      <div v-if="loading" class="grid">
-        <div v-for="n in 8" :key="`sk-${n}`" class="card-skeleton">
+      <div v-if="loading" class="hscroll">
+        <div v-for="n in 5" :key="`sc-${n}`" class="hitem card-skeleton">
           <div class="skeleton skeleton-cover" />
           <div class="skeleton skeleton-name" />
         </div>
       </div>
 
-      <div v-else-if="playlists.length" class="grid">
+      <div v-else-if="savedPlaylists.length" class="hscroll">
         <SongCard
-          v-for="pl in playlists"
+          v-for="pl in savedPlaylists"
           :key="pl.id"
+          class="hitem"
           :playlist="pl"
           @open="openPlaylist(pl.id)"
           @play="playPlaylist(pl.id)"
@@ -202,7 +190,73 @@ onMounted(loadToplist)
 
       <div v-else class="empty">
         <Icon name="list" :size="28" />
-        <p>暂无推荐歌单，点击刷新重试</p>
+        <p>暂无歌单数据，点击刷新重试</p>
+      </div>
+    </section>
+
+    <!-- 次要入口：打开指定歌单 + 背景特效（功能保留，默认折叠） -->
+    <section class="tools">
+      <button class="tools-toggle" :class="{ 'tools-toggle--open': toolsOpen }" @click="toolsOpen = !toolsOpen">
+        <Icon :name="toolsOpen ? 'chevron-down' : 'chevron-right'" :size="14" />
+        <span>更多工具（打开指定歌单 / 背景特效）</span>
+      </button>
+
+      <div v-show="toolsOpen" class="tool-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <Icon name="link" :size="15" />
+            <span>打开指定歌单</span>
+          </div>
+          <div class="panel-row">
+            <input
+              v-model="playlistInput"
+              class="field"
+              type="text"
+              placeholder="粘贴歌单 ID 或歌单链接"
+              @keyup.enter="openByInput"
+            />
+            <button class="primary-btn" @click="openByInput">打开</button>
+          </div>
+          <p class="panel-tip">例如 3778678，或 https://music.163.com/playlist?id=3778678</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <Icon name="sparkle" :size="15" />
+            <span>背景特效</span>
+          </div>
+          <div class="bg-row">
+            <span class="bg-label">模糊</span>
+            <input
+              class="range-slider bg-range"
+              type="range"
+              min="0"
+              max="40"
+              step="1"
+              :value="bgState.blur"
+              @input="onBlurInput"
+            />
+            <span class="bg-value tnum">{{ bgState.blur }}px</span>
+          </div>
+          <div class="bg-row">
+            <span class="bg-label">粒子</span>
+            <button class="switch" :class="{ 'switch--on': bgState.particles }" @click="toggleParticles()">
+              <span class="switch-knob" />
+            </button>
+            <span class="bg-value">{{ bgState.particles ? '已开启' : '已关闭' }}</span>
+          </div>
+          <div class="bg-actions">
+            <button class="ghost-btn" :disabled="downloading" @click="onDownloadWallpaper">
+              <Icon name="download" :size="14" />
+              {{ downloading ? '下载中' : '下载壁纸' }}
+            </button>
+            <button class="ghost-btn" @click="onResetBackground">
+              <Icon name="refresh" :size="14" />
+              重置背景
+            </button>
+          </div>
+          <p class="panel-tip">壁纸来源：播放条上的「设为壁纸」按钮，一键把当前封面设为背景</p>
+        </div>
       </div>
     </section>
   </div>
@@ -216,25 +270,23 @@ onMounted(loadToplist)
   max-width: 1180px;
 }
 
-/* Hero */
-.hero {
-  position: relative;
+/* ===== 欢迎条 ===== */
+.welcome {
   display: flex;
   align-items: center;
-  gap: 22px;
+  justify-content: space-between;
+  gap: 18px;
   padding: 24px 26px;
-  border-radius: 20px;
-  background: linear-gradient(120deg, rgba(124, 108, 240, 0.28), rgba(90, 167, 255, 0.12));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(120deg, rgba(124, 108, 240, 0.3), rgba(90, 167, 255, 0.1));
   border: 1px solid rgba(255, 255, 255, 0.09);
-  overflow: hidden;
 }
 
-.hero-text {
-  flex: 1;
+.welcome-text {
   min-width: 0;
 }
 
-.hero-title {
+.welcome-title {
   margin: 0;
   font-size: 26px;
   font-weight: 700;
@@ -248,52 +300,41 @@ onMounted(loadToplist)
   color: transparent;
 }
 
-.hero-sub {
+.welcome-sub {
   margin: 8px 0 0;
   font-size: 12.5px;
   color: rgba(255, 255, 255, 0.55);
 }
 
-.hero-search {
-  width: 330px;
-  flex-shrink: 0;
-}
-
-.hero-vinyl {
-  width: 76px;
-  height: 76px;
-  flex-shrink: 0;
-  display: flex;
+.welcome-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.vinyl-disc {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: repeating-radial-gradient(circle, #1c1c30 0 4px, #26264099 4px 6px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  animation: spin-slow 16s linear infinite;
+.welcome-link:hover {
+  background: rgba(124, 108, 240, 0.28);
+  border-color: rgba(124, 108, 240, 0.55);
 }
 
-.vinyl-hole {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #7c6cf0, #5aa7ff);
-}
-
-/* 提示条 */
+/* ===== 提示条 ===== */
 .alert {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 13px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   color: #ffc6cf;
   background: rgba(255, 107, 129, 0.12);
   border: 1px solid rgba(255, 107, 129, 0.32);
@@ -312,7 +353,202 @@ onMounted(loadToplist)
   font-size: 11.5px;
 }
 
-/* 工具面板 */
+/* ===== 4 张横排推荐卡 ===== */
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rec-card {
+  position: relative;
+  height: 132px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(124, 108, 240, 0.35), rgba(90, 167, 255, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+}
+
+.rec-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.rec-cover--ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rec-card:hover .rec-cover {
+  transform: scale(1.06);
+}
+
+.rec-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 7, 20, 0.05) 30%, rgba(10, 7, 20, 0.82));
+}
+
+.rec-body {
+  position: absolute;
+  left: 14px;
+  right: 56px;
+  bottom: 12px;
+}
+
+.rec-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-sub {
+  margin-top: 3px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rec-play {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  padding-left: 2px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, #7c6cf0, #5aa7ff);
+  box-shadow: 0 8px 20px rgba(124, 108, 240, 0.45);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.25s ease;
+}
+
+.rec-card:hover .rec-play {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rec-card--skeleton {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rec-card--skeleton .skeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* ===== 区块 ===== */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* 横向滚动区：每屏 5 张自适应铺满 + 超出横向滚动 */
+.hscroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
+
+/* 卡片宽度按容器自适应：(容器宽 - 4 个间距) / 5，恰好铺满一屏 */
+.hitem {
+  flex: 0 0 calc((100% - 64px) / 5);
+  min-width: 140px;
+}
+
+.card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.skeleton-name {
+  height: 12px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 0;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+}
+
+/* ===== 次要入口（打开歌单 / 背景特效） ===== */
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tools-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tools-toggle:hover {
+  color: #fff;
+  border-color: rgba(124, 108, 240, 0.5);
+}
+
+.tools-toggle--open {
+  color: #fff;
+  background: rgba(124, 108, 240, 0.18);
+  border-color: rgba(124, 108, 240, 0.6);
+}
+
 .tool-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -321,7 +557,7 @@ onMounted(loadToplist)
 
 .panel {
   padding: 16px 18px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -446,55 +682,14 @@ onMounted(loadToplist)
   margin-top: 4px;
 }
 
-/* 区块 */
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
+/* ===== 响应式：窄屏时推荐卡两列 ===== */
+@media (max-width: 1180px) {
+  .rec-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-.section-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-  gap: 18px;
-}
-
-.card-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.skeleton {
-  border-radius: 14px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05));
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-}
-
-.skeleton-cover {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-}
-
-.skeleton-name {
-  height: 12px;
-}
-
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 48px 0;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 13px;
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

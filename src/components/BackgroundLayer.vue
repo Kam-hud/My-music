@@ -127,7 +127,7 @@ watch(
 .bg-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f1a);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
 }
 
 .bg-wallpaper {

@@ -4,14 +4,23 @@
 
 /* ===== 设计 token（对齐设计文档 §9 视觉规范） ===== */
 :root {
-  --bg-1: #1a1a2e;
-  --bg-2: #16213e;
-  --bg-3: #0f0f1a;
+  /* 底色：深蓝紫 #0F0B1E 系（重构后统一主色调） */
+  --bg-base: #0f0b1e;
+  --bg-1: #0f0b1e;
+  --bg-2: #151029;
+  --bg-3: #090714;
   --accent: #7c6cf0;
   --accent-2: #5aa7ff;
   --play: #35d6c8;
-  --sidebar-w: 168px;
-  --playerbar-h: 64px;
+  --vip: #ffd166;
+  --online: #3ddc97;
+  /* 布局尺寸：左栏加宽为个人主页式导航；播放条加高以容纳「圆形播放键 + 信息 + 进度」 */
+  --sidebar-w: 240px;
+  --playerbar-h: 84px;
+  /* 圆角体系：卡片统一 16–20px */
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
 }
 
 * {
