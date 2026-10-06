@@ -1,0 +1,27 @@
+{
+  "name": "my-music",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "在线音乐播放器（复刻 music.mmp.cc）：Vue 3 + Vite + Tailwind + vue-router + Node 代理",
+  "scripts": {
+    "dev": "node scripts/dev-all.mjs",
+    "dev:web": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "server": "node server/index.js",
+    "start": "node server/index.js",
+    "smoke": "node scripts/smoke-ssr.mjs"
+  },
+  "dependencies": {
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7"
+  }
+}

@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: 3a82420d63e8c9c918afc329b2872d33_058dbc66bed211f197eb525400393706
+    ReservedCode1: QT1VHfR5u4H3630618I/IUTpKDU15+cLc6ZJUbA372y3RuCZW/uKDe2xVIIUnbJXQGG41/5tzaeTkKAGRLlfTmr8gJjW/Tk71mBb4TsaAA2sgV7tHsNbiBxQ5B2OVHL1H6nZ6nOrI60XjcJOb4a08SEnJ97O4rSvZdiu937nSPGrQXOgkPtvAqcJwZU=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: 3a82420d63e8c9c918afc329b2872d33_058dbc66bed211f197eb525400393706
+    ReservedCode2: QT1VHfR5u4H3630618I/IUTpKDU15+cLc6ZJUbA372y3RuCZW/uKDe2xVIIUnbJXQGG41/5tzaeTkKAGRLlfTmr8gJjW/Tk71mBb4TsaAA2sgV7tHsNbiBxQ5B2OVHL1H6nZ6nOrI60XjcJOb4a08SEnJ97O4rSvZdiu937nSPGrQXOgkPtvAqcJwZU=
+---
+
 # 在线音乐播放器 设计文档（复刻 music.mmp.cc）
 
 - 日期：2026-10-03
@@ -165,3 +176,4 @@ my-music/
 | 2 | Node 代理层 + 搜索 + 真实播放打通 |
 | 3 | 歌单 / 收藏 / 歌词 |
 | 4 | 背景特效（模糊 / 粒子 / 壁纸）+ 倍速 + 打磨与验收 |
+*（内容由AI生成，仅供参考）*
