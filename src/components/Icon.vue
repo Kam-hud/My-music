@@ -35,6 +35,7 @@ const PATHS = {
   download: '<path d="M12 4v11"/><path d="m7.4 10.6 4.6 4.6 4.6-4.6"/><path d="M4.8 19.4h14.4"/>',
   refresh: '<path d="M20 11.6A8 8 0 1 0 12 20a8 8 0 0 0 6.6-3.5"/><path d="M20.2 4.8v6.4h-6.4"/>',
   music: '<path d="M9.5 18V5.6l10-1.8V16"/><circle cx="6.8" cy="18" r="2.7"/><circle cx="16.8" cy="16" r="2.7"/>',
+  palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/>',
   'play-all': '<circle cx="12" cy="12" r="9"/><polygon points="10.2 8.2 16 12 10.2 15.8"/>',
   plus: '<path d="M12 5.2v13.6M5.2 12h13.6"/>',
   sparkle:

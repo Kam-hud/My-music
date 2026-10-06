@@ -92,53 +92,68 @@ onBeforeUnmount(() => {
 
 <template>
   <footer class="player-bar">
-    <!-- 左：封面 + 歌曲信息 + 设为壁纸 + 进度条（播放控制统一在右区） -->
+    <!-- 左：皮肤按钮 -->
     <div class="pb-left">
-      <div class="pb-info">
-        <div class="pb-line">
-          <div class="pb-cover">
-            <img v-if="song && song.cover" :src="song.cover" alt="cover" />
-            <span v-else class="pb-cover-ph">{{ coverText }}</span>
-          </div>
-          <div class="pb-meta">
-            <div class="pb-name" :title="song ? song.name : ''">
-              <span v-if="state.loading" class="pb-dot" />
-              {{ song ? song.name : '未在播放' }}
+      <button class="btn-icon" title="皮肤" @click="player.showToast('皮肤功能开发中', 'info')">
+        <Icon name="palette" :size="18" />
+      </button>
+    </div>
+
+    <!-- 居中：上排播放控制，下排歌曲信息（左）+ 进度条（右） -->
+    <div class="pb-center">
+      <!-- 上部：上一首 / 暂停 / 下一首 -->
+      <div class="pb-controls">
+        <button class="btn-icon" title="上一首" @click="player.prev()">
+          <Icon name="prev" :size="18" />
+        </button>
+        <button
+          class="pb-play-right"
+          :class="{ 'pb-play-right--on': state.isPlaying }"
+          :title="state.isPlaying ? '暂停' : '播放'"
+          @click="player.togglePlay()"
+        >
+          <Icon :name="state.isPlaying ? 'pause' : 'play'" :size="18" />
+        </button>
+        <button class="btn-icon" title="下一首" @click="player.next()">
+          <Icon name="next" :size="18" />
+        </button>
+      </div>
+
+      <!-- 下部：歌曲信息（左） + 进度条（右），同一行横向排列 -->
+      <div class="pb-main">
+        <!-- 左：封面小图 + 歌名 + 歌手 + 壁纸 -->
+        <div class="pb-info">
+          <div class="pb-line">
+            <div class="pb-cover">
+              <img v-if="song && song.cover" :src="song.cover" alt="cover" />
+              <span v-else class="pb-cover-ph">{{ coverText }}</span>
             </div>
-            <div class="pb-artist">{{ song ? song.artist : '选一首歌开始聆听' }}</div>
+            <div class="pb-meta">
+              <div class="pb-name" :title="song ? song.name : ''">
+                <span v-if="state.loading" class="pb-dot" />
+                {{ song ? song.name : '未在播放' }}
+              </div>
+              <div class="pb-artist">{{ song ? song.artist : '选一首歌开始聆听' }}</div>
+            </div>
+            <button v-if="song" class="btn-icon pb-wall" title="用当前封面作为背景壁纸" @click="useAsWallpaper">
+              <Icon name="image" :size="15" />
+            </button>
           </div>
-          <button v-if="song" class="btn-icon pb-wall" title="用当前封面作为背景壁纸" @click="useAsWallpaper">
-            <Icon name="image" :size="15" />
-          </button>
         </div>
 
-        <ProgressBar
-          :current="state.currentTime"
-          :duration="state.duration"
-          @seek="(t) => player.seek(t)"
-        />
+        <!-- 右：进度条 -->
+        <div class="pb-progress-wrap">
+          <ProgressBar
+            :current="state.currentTime"
+            :duration="state.duration"
+            @seek="(t) => player.seek(t)"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 右：上一首 / 暂停 / 下一首 / 音量 / 歌词 / HQ / 全屏 -->
+    <!-- 右：音量 / 歌词 / HQ / 全屏 / 次级控制 -->
     <div class="pb-right">
-      <button class="btn-icon" title="上一首" @click="player.prev()">
-        <Icon name="prev" :size="18" />
-      </button>
-      <button
-        class="pb-play-right"
-        :class="{ 'pb-play-right--on': state.isPlaying }"
-        :title="state.isPlaying ? '暂停' : '播放'"
-        @click="player.togglePlay()"
-      >
-        <Icon :name="state.isPlaying ? 'pause' : 'play'" :size="18" />
-      </button>
-      <button class="btn-icon" title="下一首" @click="player.next()">
-        <Icon name="next" :size="18" />
-      </button>
-
-      <span class="pb-divider" />
-
       <VolumeControl />
 
       <button
@@ -181,31 +196,63 @@ onBeforeUnmount(() => {
   bottom: 0;
   height: var(--playerbar-h);
   z-index: 40;
-  display: flex;
+  /* 三列网格：左右等宽 1fr，中间 auto → 居中区域永远处于播放条正中 */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   padding: 0 20px;
   background: rgba(13, 9, 26, 0.93);
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ===== 左区 ===== */
+/* ===== 左区：皮肤按钮 ===== */
 .pb-left {
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex: 1 1 auto;
+  justify-content: flex-start;
+  justify-self: start;
   min-width: 0;
 }
 
-.pb-info {
-  flex: 1;
-  min-width: 0;
-  max-width: 640px;
+/* ===== 居中区域（网格中列，天然居中） ===== */
+.pb-center {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* 上部：上一首 / 暂停 / 下一首 */
+.pb-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 下部：歌曲信息 + 进度条 同一行（信息在左、进度条在右） */
+.pb-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* 左：封面 + 歌名 + 歌手 + 壁纸 */
+.pb-info {
+  width: 190px;
+  flex-shrink: 0;
+}
+
+/* 右：进度条 */
+.pb-progress-wrap {
+  width: 360px;
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
 .pb-line {
@@ -217,10 +264,10 @@ onBeforeUnmount(() => {
 
 .pb-cover {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -236,7 +283,7 @@ onBeforeUnmount(() => {
 }
 
 .pb-cover-ph {
-  font-size: 15px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -249,7 +296,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -267,7 +314,7 @@ onBeforeUnmount(() => {
 
 .pb-artist {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: 10.5px;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
   overflow: hidden;
@@ -275,9 +322,10 @@ onBeforeUnmount(() => {
 }
 
 .pb-wall {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   opacity: 0.5;
+  flex-shrink: 0;
 }
 
 .pb-wall:hover {
@@ -289,8 +337,9 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  justify-self: end;
   gap: 6px;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .pb-right .btn-icon {
@@ -300,8 +349,8 @@ onBeforeUnmount(() => {
 
 /* 暂停按钮（上一首 / 下一首中间） */
 .pb-play-right {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   border: none;
   border-radius: 50%;
@@ -386,6 +435,17 @@ onBeforeUnmount(() => {
 @media (max-width: 1320px) {
   .pb-extra {
     display: none;
+  }
+}
+
+/* 窄屏：压缩歌曲信息与进度条宽度，保证居中区不被挤压 */
+@media (max-width: 1100px) {
+  .pb-info {
+    width: 140px;
+  }
+
+  .pb-progress-wrap {
+    width: 240px;
   }
 }
 </style>
