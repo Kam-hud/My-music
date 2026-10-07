@@ -177,4 +177,53 @@ function jumpTo(time) {
 .lyric-leave-to {
   opacity: 0;
 }
+
+/* ===== 移动端（≤768px）：歌词改为底部抽屉式，占满宽度，且不遮挡播放条 ===== */
+@media (max-width: 768px) {
+  .lyric-mask {
+    /* 层级低于播放条（z-index:40），保证歌词打开时播放控制仍可用 */
+    z-index: 30;
+    align-items: flex-end;
+    /* 抽屉底部止于播放条上沿，二者不重叠 */
+    padding: 0 0 var(--playerbar-h);
+  }
+
+  .lyric-panel {
+    width: 100%;
+    height: 66dvh;
+    max-height: 100%;
+    border-radius: 18px 18px 0 0;
+    border-bottom: none;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .lyric-head {
+    padding: 14px 16px;
+  }
+
+  .lyric-title {
+    font-size: 14px;
+  }
+
+  .lyric-artist {
+    font-size: 11.5px;
+  }
+
+  .lyric-body {
+    padding: 18px 16px 42%;
+  }
+
+  .lyric-line {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .lyric-line--active {
+    font-size: 16.5px;
+  }
+
+  .lyric-trans {
+    font-size: 11.5px;
+  }
+}
 </style>

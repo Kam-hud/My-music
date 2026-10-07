@@ -149,4 +149,43 @@ function onClearClick() {
 .list-wrap {
   padding: 6px 4px 10px;
 }
+
+/* ===== 移动端（≤768px）：标题与操作按钮纵向堆叠，按钮等宽 ===== */
+@media (max-width: 768px) {
+  .page {
+    gap: 14px;
+  }
+
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 19px;
+  }
+
+  .page-sub {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .head-actions {
+    gap: 8px;
+  }
+
+  .primary-btn,
+  .ghost-btn {
+    flex: 1 1 0;
+    justify-content: center;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+
+  .list-wrap {
+    padding: 4px 0 8px;
+  }
+}
 </style>

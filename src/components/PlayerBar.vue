@@ -1,9 +1,10 @@
 <script setup>
 /**
- * 底部常驻播放条（重构版）
- * 左侧：圆形播放/暂停键 + 歌曲信息（封面/歌名/歌手）+ 进度条
- * 右侧：上一首 / 下一首 / 音量 / 歌词 / HQ 音质 / 全屏（窄屏时倍速与模式收进次级区）
- * 说明：HQ 为播放偏好开关（本地持久化），全屏走浏览器全屏 API，均不改变后端接口
+ * 底部常驻播放条（参考图重构版）
+ * 左侧：皮肤按钮（始终位于最左）
+ * 中部：歌曲信息（封面/歌名/歌手）与上一首/播放暂停/下一首同一水平行，进度条位于其下方
+ * 右侧：音量 / SQ 音质 / 歌词 / 全屏（窄屏时倍速与模式收进次级区）
+ * 说明：SQ 为播放偏好开关（本地持久化），全屏走浏览器全屏 API，均不改变后端接口
  */
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
@@ -38,7 +39,7 @@ function toggleHq() {
   } catch (e) {
     /* 隐私模式下写入失败可忽略 */
   }
-  player.showToast(hqOn.value ? '已开启 HQ 音质偏好' : '已关闭 HQ 音质偏好', 'info')
+  player.showToast(hqOn.value ? '已开启 SQ 音质偏好' : '已关闭 SQ 音质偏好', 'info')
 }
 
 function syncFullscreen() {
@@ -92,56 +93,54 @@ onBeforeUnmount(() => {
 
 <template>
   <footer class="player-bar">
-    <!-- 左：皮肤按钮 -->
+    <!-- 最左：皮肤按钮 -->
     <div class="pb-left">
       <button class="btn-icon" title="皮肤" @click="player.showToast('皮肤功能开发中', 'info')">
         <Icon name="palette" :size="18" />
       </button>
     </div>
 
-    <!-- 居中：上排播放控制，下排歌曲信息（左）+ 进度条（右） -->
+    <!-- 中：歌曲信息（左） + 播放控制+进度条整体（右） -->
     <div class="pb-center">
-      <!-- 上部：上一首 / 暂停 / 下一首 -->
-      <div class="pb-controls">
-        <button class="btn-icon" title="上一首" @click="player.prev()">
-          <Icon name="prev" :size="18" />
-        </button>
-        <button
-          class="pb-play-right"
-          :class="{ 'pb-play-right--on': state.isPlaying }"
-          :title="state.isPlaying ? '暂停' : '播放'"
-          @click="player.togglePlay()"
-        >
-          <Icon :name="state.isPlaying ? 'pause' : 'play'" :size="18" />
-        </button>
-        <button class="btn-icon" title="下一首" @click="player.next()">
-          <Icon name="next" :size="18" />
+      <!-- 歌曲信息：封面 + 歌名 + 歌手 + 壁纸 -->
+      <div class="pb-info">
+        <div class="pb-cover">
+          <img v-if="song && song.cover" :src="song.cover" alt="cover" />
+          <span v-else class="pb-cover-ph">{{ coverText }}</span>
+        </div>
+        <div class="pb-meta">
+          <div class="pb-name" :title="song ? song.name : ''">
+            <span v-if="state.loading" class="pb-dot" />
+            {{ song ? song.name : '未在播放' }}
+          </div>
+          <div class="pb-artist">{{ song ? song.artist : '选一首歌开始聆听' }}</div>
+        </div>
+        <button v-if="song" class="btn-icon pb-wall" title="用当前封面作为背景壁纸" @click="useAsWallpaper">
+          <Icon name="image" :size="15" />
         </button>
       </div>
 
-      <!-- 下部：歌曲信息（左） + 进度条（右），同一行横向排列 -->
-      <div class="pb-main">
-        <!-- 左：封面小图 + 歌名 + 歌手 + 壁纸 -->
-        <div class="pb-info">
-          <div class="pb-line">
-            <div class="pb-cover">
-              <img v-if="song && song.cover" :src="song.cover" alt="cover" />
-              <span v-else class="pb-cover-ph">{{ coverText }}</span>
-            </div>
-            <div class="pb-meta">
-              <div class="pb-name" :title="song ? song.name : ''">
-                <span v-if="state.loading" class="pb-dot" />
-                {{ song ? song.name : '未在播放' }}
-              </div>
-              <div class="pb-artist">{{ song ? song.artist : '选一首歌开始聆听' }}</div>
-            </div>
-            <button v-if="song" class="btn-icon pb-wall" title="用当前封面作为背景壁纸" @click="useAsWallpaper">
-              <Icon name="image" :size="15" />
-            </button>
-          </div>
+      <!-- 播放控制 + 进度条（整体模块） -->
+      <div class="pb-controls-wrap">
+        <!-- 上排：上一首 / 播放暂停 / 下一首 -->
+        <div class="pb-controls">
+          <button class="btn-icon" title="上一首" @click="player.prev()">
+            <Icon name="prev" :size="18" />
+          </button>
+          <button
+            class="pb-play-main"
+            :class="{ 'pb-play-main--on': state.isPlaying }"
+            :title="state.isPlaying ? '暂停' : '播放'"
+            @click="player.togglePlay()"
+          >
+            <Icon :name="state.isPlaying ? 'pause' : 'play'" :size="19" />
+          </button>
+          <button class="btn-icon" title="下一首" @click="player.next()">
+            <Icon name="next" :size="18" />
+          </button>
         </div>
 
-        <!-- 右：进度条 -->
+        <!-- 下排：进度条 -->
         <div class="pb-progress-wrap">
           <ProgressBar
             :current="state.currentTime"
@@ -157,7 +156,16 @@ onBeforeUnmount(() => {
       <VolumeControl />
 
       <button
-        class="btn-icon"
+        class="pb-sq"
+        :class="{ 'pb-sq--on': hqOn, 'pb-sq--off': !hqOn }"
+        :title="hqOn ? 'SQ 音质已开启' : 'SQ 音质已关闭'"
+        @click="toggleHq"
+      >
+        SQ
+      </button>
+
+      <button
+        class="btn-icon pb-lyric"
         :class="{ 'pb-lyric--on': state.showLyrics }"
         title="歌词"
         @click="player.toggleLyrics()"
@@ -165,11 +173,7 @@ onBeforeUnmount(() => {
         <Icon name="lyrics" :size="17" />
       </button>
 
-      <button class="pb-hq" :class="{ 'pb-hq--on': hqOn }" :title="hqOn ? 'HQ 音质已开启' : 'HQ 音质已关闭'" @click="toggleHq">
-        HQ
-      </button>
-
-      <button class="btn-icon" :title="isFullscreen ? '退出全屏' : '全屏'" @click="toggleFullscreen">
+      <button class="btn-icon pb-full" :title="isFullscreen ? '退出全屏' : '全屏'" @click="toggleFullscreen">
         <Icon :name="isFullscreen ? 'shrink' : 'expand'" :size="17" />
       </button>
 
@@ -207,59 +211,56 @@ onBeforeUnmount(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ===== 左区：皮肤按钮 ===== */
+/* ===== 最左：皮肤按钮 ===== */
 .pb-left {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   justify-self: start;
   min-width: 0;
 }
 
-/* ===== 居中区域（网格中列，天然居中） ===== */
+/* ===== 中间区域：歌曲信息（左） + 播放控制+进度条整体（右） ===== */
 .pb-center {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: space-between;
+  gap: 18px;
   min-width: 0;
+  flex: 1;
 }
 
-/* 上部：上一首 / 暂停 / 下一首 */
-.pb-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* 下部：歌曲信息 + 进度条 同一行（信息在左、进度条在右） */
-.pb-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-/* 左：封面 + 歌名 + 歌手 + 壁纸 */
+/* 歌曲信息：封面 + 歌名 + 歌手 + 壁纸 */
 .pb-info {
-  width: 190px;
-  flex-shrink: 0;
-}
-
-/* 右：进度条 */
-.pb-progress-wrap {
-  width: 360px;
-  flex-shrink: 0;
-  max-width: 100%;
-}
-
-.pb-line {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
+  max-width: 160px;
+  flex-shrink: 0;
+}
+
+/* 播放控制 + 进度条（整体模块） */
+.pb-controls-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* 上排：上一首 / 播放暂停 / 下一首 */
+.pb-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* 进度条 */
+.pb-progress-wrap {
+  width: 600px;
 }
 
 .pb-cover {
@@ -347,10 +348,10 @@ onBeforeUnmount(() => {
   height: 32px;
 }
 
-/* 暂停按钮（上一首 / 下一首中间） */
-.pb-play-right {
-  width: 34px;
-  height: 34px;
+/* 播放/暂停按钮：圆形 + 浅蓝发光高亮（上一首 / 下一首中间） */
+.pb-play-main {
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   border: none;
   border-radius: 50%;
@@ -358,18 +359,19 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background: linear-gradient(135deg, #7c6cf0, #5aa7ff);
-  box-shadow: 0 4px 12px rgba(124, 108, 240, 0.38);
+  background: radial-gradient(circle at 32% 26%, #a8daff 0%, #55a2ff 58%, #3b82f6 100%);
+  box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.14), 0 6px 16px rgba(59, 130, 246, 0.5);
   cursor: pointer;
-  transition: transform 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.pb-play-right:hover {
+.pb-play-main:hover {
   transform: scale(1.06);
 }
 
-.pb-play-right--on {
-  box-shadow: 0 4px 18px rgba(124, 108, 240, 0.55);
+/* 播放中：浅蓝光晕更亮，形成醒目的圆形高亮 */
+.pb-play-main--on {
+  box-shadow: 0 0 0 6px rgba(96, 165, 250, 0.22), 0 6px 22px rgba(59, 130, 246, 0.72);
 }
 
 .pb-divider {
@@ -379,28 +381,33 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* HQ 音质开关 */
-.pb-hq {
-  min-width: 38px;
+/* SQ 音质按钮（方形 + 橙色边框，橙底橙字 SQ） */
+.pb-sq {
+  min-width: 34px;
   height: 26px;
-  padding: 0 8px;
-  border-radius: 8px;
+  padding: 0 7px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
   font-family: inherit;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.6px;
+  color: #ff8c1a;
+  background: rgba(255, 140, 26, 0.14);
+  border: 1.5px solid #ff8c1a;
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
-.pb-hq--on {
-  color: #0f0b1e;
-  background: linear-gradient(135deg, #ffd166, #ffb347);
-  border-color: transparent;
-  box-shadow: 0 4px 14px rgba(255, 209, 102, 0.3);
+.pb-sq--on {
+  color: #ffa64d;
+  background: rgba(255, 140, 26, 0.2);
+  box-shadow: 0 0 10px rgba(255, 140, 26, 0.28);
+}
+
+.pb-sq--off {
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .pb-lyric--on {
@@ -438,14 +445,139 @@ onBeforeUnmount(() => {
   }
 }
 
-/* 窄屏：压缩歌曲信息与进度条宽度，保证居中区不被挤压 */
+/* 窄屏：压缩歌曲信息区宽度 */
 @media (max-width: 1100px) {
   .pb-info {
-    width: 140px;
+    max-width: 170px;
+    gap: 6px;
+  }
+
+  .pb-cover {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pb-name {
+    font-size: 11.5px;
+  }
+
+  .pb-artist {
+    font-size: 10px;
+  }
+}
+
+/* 更窄屏：隐藏壁纸按钮 */
+@media (max-width: 900px) {
+  .pb-wall {
+    display: none;
+  }
+}
+
+/* ===== 移动端（≤768px）：播放条改为两层紧凑结构 =====
+   第 1 行：[封面 + 歌名/歌手]  [上一首/播放/下一首]  [歌词]  [全屏]
+   第 2 行：进度条整行铺满
+   音量 / SQ / 倍速 / 播放模式等次级控制在移动端隐藏（音量交由系统控制） */
+@media (max-width: 768px) {
+  .player-bar {
+    height: auto;
+    min-height: var(--playerbar-h);
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      'info ctrls lyric full'
+      'prog prog prog prog';
+    align-items: center;
+    column-gap: 4px;
+    row-gap: 6px;
+    padding: 8px 12px 10px;
+  }
+
+  /* 拆解中间与右侧容器，让子元素直接参与播放条网格排布 */
+  .pb-left {
+    display: none;
+  }
+
+  .pb-center,
+  .pb-controls-wrap,
+  .pb-right {
+    display: contents;
+  }
+
+  .pb-info {
+    grid-area: info;
+    max-width: none;
+    gap: 8px;
+  }
+
+  .pb-cover {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pb-name {
+    font-size: 12px;
+  }
+
+  .pb-artist {
+    font-size: 10px;
+  }
+
+  .pb-controls {
+    grid-area: ctrls;
+    gap: 4px;
+  }
+
+  .pb-play-main {
+    width: 36px;
+    height: 36px;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.14), 0 4px 12px rgba(59, 130, 246, 0.5);
+  }
+
+  .pb-play-main--on {
+    box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.22), 0 4px 16px rgba(59, 130, 246, 0.72);
   }
 
   .pb-progress-wrap {
-    width: 240px;
+    grid-area: prog;
+    width: 100%;
+  }
+
+  .pb-lyric {
+    grid-area: lyric;
+  }
+
+  .pb-full {
+    grid-area: full;
+  }
+
+  /* 次级控制在移动端隐藏 */
+  .volume,
+  .pb-sq,
+  .pb-divider,
+  .pb-extra {
+    display: none;
+  }
+}
+
+/* 小屏手机：进一步压缩字号与按钮尺寸 */
+@media (max-width: 480px) {
+  .player-bar {
+    padding: 7px 10px 9px;
+  }
+
+  .pb-right .btn-icon,
+  .pb-lyric,
+  .pb-full {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pb-info {
+    gap: 7px;
+  }
+
+  .pb-cover {
+    width: 32px;
+    height: 32px;
   }
 }
 </style>

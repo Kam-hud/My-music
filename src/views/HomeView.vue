@@ -470,15 +470,18 @@ onMounted(loadToplist)
 /* 横向滚动区：每屏 5 张自适应铺满 + 超出横向滚动 */
 .hscroll {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 400px;
+  padding-right: 10px;
+  scrollbar-width: none;
 }
 
 /* 卡片宽度按容器自适应：(容器宽 - 4 个间距) / 5，恰好铺满一屏 */
 .hitem {
-  flex: 0 0 calc((100% - 64px) / 5);
+  flex: 0 0 calc((100% - 48px) / 4);
   min-width: 140px;
 }
 
@@ -690,6 +693,131 @@ onMounted(loadToplist)
 
   .tool-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 移动端（≤768px）：欢迎条纵向堆叠、私存歌单改为 2 列横滑 ===== */
+@media (max-width: 768px) {
+  .home {
+    gap: 18px;
+  }
+
+  .welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px 16px;
+  }
+
+  .welcome-title {
+    font-size: 21px;
+  }
+
+  .welcome-sub {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+
+  .welcome-link {
+    height: 32px;
+    padding: 0 13px;
+    font-size: 12px;
+  }
+
+  .alert {
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 11px 13px;
+  }
+
+  .alert-body {
+    flex: 1 1 150px;
+  }
+
+  .rec-grid {
+    gap: 12px;
+  }
+
+  .rec-card {
+    height: 116px;
+  }
+
+  .rec-body {
+    left: 11px;
+    right: 44px;
+    bottom: 10px;
+  }
+
+  .rec-title {
+    font-size: 12.5px;
+  }
+
+  .rec-sub {
+    font-size: 10.5px;
+  }
+
+  /* 移动端无 hover：播放按钮常显并缩小 */
+  .rec-play {
+    width: 30px;
+    height: 30px;
+    right: 9px;
+    bottom: 9px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .section-head {
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 15.5px;
+  }
+
+  .hscroll {
+    gap: 12px;
+  }
+
+  /* 一屏约 2.2 张卡片，明确提示可横向滑动 */
+  .hitem {
+    flex: 0 0 calc((100% - 12px) / 2.2);
+    min-width: 0;
+  }
+
+  .tools-toggle {
+    align-self: stretch;
+    justify-content: center;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .panel-row {
+    flex-wrap: wrap;
+  }
+
+  .field {
+    flex: 1 1 100%;
+  }
+
+  .primary-btn {
+    flex: 1 1 100%;
+  }
+
+  .bg-value {
+    width: 46px;
+  }
+
+  .bg-actions {
+    flex-wrap: wrap;
+  }
+
+  .bg-actions .ghost-btn {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 }
 </style>

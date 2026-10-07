@@ -217,4 +217,62 @@ watch(
 .result-count strong {
   color: #35d6c8;
 }
+
+/* ===== 移动端（≤768px）：搜索框与音源切换占满宽度 ===== */
+@media (max-width: 768px) {
+  .page {
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 19px;
+  }
+
+  .page-sub {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .search-wrap {
+    max-width: none;
+  }
+
+  .source-tabs {
+    gap: 8px;
+  }
+
+  .source-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+  }
+
+  .source-name {
+    font-size: 12.5px;
+  }
+
+  .source-tip {
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .alert {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 11px 13px;
+  }
+
+  .result-wrap {
+    padding: 4px 0 8px;
+  }
+
+  .result-count {
+    padding: 0 8px 10px;
+    font-size: 12px;
+  }
+}
 </style>

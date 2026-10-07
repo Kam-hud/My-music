@@ -34,6 +34,12 @@ body {
   height: 100%;
 }
 
+html {
+  /* 移动端禁止系统字体自动放大，避免字号跳变 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
   color: rgba(255, 255, 255, 0.92);
@@ -307,5 +313,53 @@ input[type='range'].range-slider::-moz-range-track {
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+/* ==========================================================================
+   移动端适配（375px ~ 768px）
+   仅调整尺寸 / 布局与可见性，不改变任何业务逻辑与桌面端（>768px）表现
+   ========================================================================== */
+
+/* 平板竖屏 / 大屏手机：侧边栏转为顶部栏，播放条改为两层结构 */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 100%;
+    --playerbar-h: 88px;
+  }
+
+  html,
+  body {
+    /* 双保险：移动端不允许页面级横向滚动 */
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* 移动端触摸优化：去掉点击高亮块与 300ms 点击延迟 */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role='button'] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* 适配移动端动态视口高度（浏览器地址栏收起 / 展开时不再出现底部留白或裁切） */
+  #app {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* 小屏手机：进一步压缩间距与字号 */
+@media (max-width: 480px) {
+  :root {
+    --playerbar-h: 84px;
   }
 }

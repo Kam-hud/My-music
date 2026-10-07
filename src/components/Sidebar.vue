@@ -493,4 +493,101 @@ onMounted(loadToplist)
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* ===== 移动端（≤768px）：左栏转为顶部导航栏 =====
+   第一行：头像（跳收藏）+ 搜索框；第二行：4 个导航项横向排列
+   统计 / 分类 / 底部提示等次要信息在移动端隐藏，对应能力仍由顶部导航与搜索页承载 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex: 0 0 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 8px 12px 10px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(13, 9, 26, 0.94);
+    overflow: visible;
+  }
+
+  /* 用户块压缩为头像按钮 */
+  .user {
+    flex: 0 0 auto;
+    padding: 3px;
+    border-radius: 999px;
+    gap: 0;
+  }
+
+  .user-meta,
+  .user-chev {
+    display: none;
+  }
+
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .user-online {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* 搜索框占满剩余宽度 */
+  .side-search {
+    flex: 1 1 150px;
+    min-width: 0;
+    height: 36px;
+    padding: 0 12px;
+  }
+
+  .side-search-input {
+    font-size: 12.5px;
+  }
+
+  /* 导航项横向排列并允许横向滑动，保证 375px 下不换行挤压 */
+  .nav {
+    flex: 1 1 100%;
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-item {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  /* 次要区块在移动端隐藏 */
+  .stats,
+  .cats,
+  .tip {
+    display: none;
+  }
+}
+
+/* 小屏手机：导航项更紧凑 */
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 8px 10px 10px;
+    gap: 6px 8px;
+  }
+
+  .nav-item {
+    padding: 7px 11px;
+    font-size: 12px;
+  }
+}
 </style>

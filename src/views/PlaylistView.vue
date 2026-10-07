@@ -268,4 +268,72 @@ watch(
 .skeleton-sub--short {
   max-width: 220px;
 }
+
+/* ===== 移动端（≤768px）：歌单头改为纵向排布 ===== */
+@media (max-width: 768px) {
+  .page {
+    gap: 14px;
+  }
+
+  .alert {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 11px 13px;
+  }
+
+  .detail-head {
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .head-cover {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    font-size: 22px;
+  }
+
+  .head-info {
+    gap: 6px;
+  }
+
+  .head-name {
+    font-size: 18px;
+  }
+
+  .head-desc {
+    font-size: 11.5px;
+  }
+
+  .head-meta {
+    gap: 12px;
+    font-size: 11.5px;
+    flex-wrap: wrap;
+  }
+
+  .head-actions {
+    margin-top: 4px;
+  }
+
+  .primary-btn {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 12.5px;
+  }
+
+  .list-wrap {
+    padding: 4px 0 8px;
+  }
+
+  .skeleton-cover {
+    width: 96px;
+    height: 96px;
+  }
+
+  .skeleton-title {
+    height: 18px;
+  }
+}
 </style>

@@ -157,4 +157,40 @@ onMounted(load)
   color: rgba(255, 255, 255, 0.3);
   font-size: 13px;
 }
+
+/* ===== 移动端（≤768px）：卡片改为自适应小列宽，最多两列 ===== */
+@media (max-width: 768px) {
+  .page {
+    gap: 14px;
+  }
+
+  .page-head {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .page-title {
+    font-size: 19px;
+  }
+
+  .page-sub {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .alert {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 11px 13px;
+  }
+
+  .empty {
+    padding: 36px 0;
+  }
+}
 </style>

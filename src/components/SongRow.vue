@@ -240,4 +240,64 @@ const sourceTag = computed(() => (props.song.source === 'qq' ? 'QQ' : '网易'))
     transform: scaleY(1);
   }
 }
+
+/* ===== 移动端（≤768px）：精简为 序号 + 歌曲信息 + 时长 + 操作 =====
+   专辑 / 音源两列在窄屏隐藏，收藏、加入列表、播放三个操作完整保留 */
+@media (max-width: 768px) {
+  .song-row {
+    grid-template-columns: 26px minmax(0, 1fr) 42px 92px;
+    gap: 8px;
+    padding: 8px 8px;
+    border-radius: 8px;
+  }
+
+  .col-album,
+  .col-source {
+    display: none;
+  }
+
+  .col-main {
+    gap: 9px;
+  }
+
+  .row-cover {
+    width: 34px;
+    height: 34px;
+  }
+
+  .row-name {
+    font-size: 12.5px;
+  }
+
+  .row-artist {
+    font-size: 11px;
+  }
+
+  .col-actions {
+    gap: 2px;
+  }
+
+  .row-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* 小屏手机：进一步压缩 */
+@media (max-width: 480px) {
+  .song-row {
+    grid-template-columns: 22px minmax(0, 1fr) 38px 88px;
+    gap: 6px;
+    padding: 7px 6px;
+  }
+
+  .row-cover {
+    width: 32px;
+    height: 32px;
+  }
+
+  .col-time {
+    font-size: 11px;
+  }
+}
 </style>

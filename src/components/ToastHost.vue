@@ -56,4 +56,20 @@ const ICONS = { success: 'heart-fill', error: 'close', info: 'sparkle' }
   opacity: 0;
   transform: translateX(-50%) translateY(-12px);
 }
+
+/* ===== 移动端（≤768px）：提示改到播放条上方，避免遮挡顶部导航 ===== */
+@media (max-width: 768px) {
+  .toast {
+    top: auto;
+    bottom: calc(var(--playerbar-h) + 12px);
+    max-width: calc(100vw - 24px);
+    padding: 9px 15px;
+    font-size: 12.5px;
+  }
+
+  .toast-enter-from,
+  .toast-leave-to {
+    transform: translateX(-50%) translateY(10px);
+  }
+}
 </style>

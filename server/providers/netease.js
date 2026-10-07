@@ -94,33 +94,109 @@ export async function lyric(id) {
   }
 }
 
-/** 歌单详情 */
-export async function playlist(id) {
+/**
+ * 批量拉取曲目详情：song/detail 支持一次传多个 id（实测 100 个/批稳定），
+ * 返回结果按传入 id 顺序对齐（部分 id 无效时自动跳过）。
+ */
+async function fetchSongsByIds(ids) {
+  const out = []
+  for (let i = 0; i < ids.length; i += 100) {
+    const chunk = ids.slice(i, i + 100)
+    const url = `https://music.163.com/api/song/detail?ids=%5B${chunk.join(',')}%5D`
+    try {
+      const data = await fetchJson(url, { headers: BASE_HEADERS })
+      const list = (data && data.songs) || []
+      const map = new Map(list.map((s) => [String(s.id), s]))
+      for (const cid of chunk) {
+        const hit = map.get(String(cid))
+        if (hit) out.push(hit)
+      }
+    } catch {
+      // 单批失败不影响其余批次
+    }
+  }
+  return out
+}
+
+/** 取歌单全量曲目 id（v6 detail 的 playlist.trackIds） */
+async function fetchTrackIds(id) {
   const url = `https://music.163.com/api/v6/playlist/detail?id=${encodeURIComponent(id)}`
   const data = await fetchJson(url, { headers: BASE_HEADERS })
   const p = data && (data.playlist || (data.result && data.result.playlist))
-  if (!p) throw new ApiError('歌单不存在或已被删除', 'PLAYLIST_NOT_FOUND')
-  const tracks = p.tracks || []
+  const list = p && Array.isArray(p.trackIds) ? p.trackIds : []
+  return list.map((t) => t && t.id).filter(Boolean)
+}
+
+/**
+ * 歌单详情：返回全量曲目（songs.length 对齐 trackCount）
+ * 主接口用旧版 /api/playlist/detail —— 其实测 result.tracks 为全量曲目（官方榜 200/100/50 首均与 trackCount 一致），
+ *   且字段为旧版 artists/album/duration，与 normalizeSong 兼容。
+ * 说明：/api/v6/playlist/track/all 直连（GET/POST form）均返回 code=404，该接口需 weapi/eapi 加密签名，故不可直连使用。
+ * 兜底：主接口不可用时回落 /api/v6/playlist/detail；若曲目数仍少于 trackCount（接口截断），
+ *   用 trackIds + song/detail 分批补齐。
+ */
+export async function playlist(id) {
+  let p = null
+  let tracks = []
+
+  // 1) 主接口：旧版详情，返回全量 tracks
+  try {
+    const legacy = await fetchJson(`https://music.163.com/api/playlist/detail?id=${encodeURIComponent(id)}`, {
+      headers: BASE_HEADERS
+    })
+    p = (legacy && legacy.result) || null
+    if (p && Array.isArray(p.tracks)) tracks = p.tracks
+  } catch {
+    p = null
+  }
+
+  // 2) 回落：v6 详情（tracks 仅前 10 首）
+  if (!p) {
+    const data = await fetchJson(`https://music.163.com/api/v6/playlist/detail?id=${encodeURIComponent(id)}`, {
+      headers: BASE_HEADERS
+    })
+    p = data && (data.playlist || (data.result && data.result.playlist))
+    if (!p) throw new ApiError('歌单不存在或已被删除', 'PLAYLIST_NOT_FOUND')
+    tracks = Array.isArray(p.tracks) ? p.tracks : []
+  }
+
+  // 3) 曲目数不足声明总数时补齐（防接口截断）
+  const trackCount = Number(p.trackCount) || 0
+  if (trackCount > tracks.length) {
+    try {
+      const ids = await fetchTrackIds(id)
+      if (ids.length > tracks.length) {
+        const full = await fetchSongsByIds(ids)
+        if (full.length > tracks.length) tracks = full
+      }
+    } catch {
+      // 补齐失败时保留已获取的曲目
+    }
+  }
+
   return {
     id: String(p.id),
     name: p.name || '未命名歌单',
     cover: p.coverImgUrl || '',
     description: p.description || '',
     playCount: p.playCount || 0,
+    songCount: trackCount || tracks.length,
     songs: tracks.map(normalizeSong).filter(Boolean)
   }
 }
 
-// 推荐歌单（精选常见榜单，详情懒加载，失败时降级为静态元数据）
+// 推荐歌单：网易云官方榜单（详情实时拉取，失败时降级为静态元数据）
+// 榜单 id 来源：官方榜单列表接口 https://music.163.com/api/toplist 实测（2026-10-07 校验）
+// 覆盖综合热榜（热歌 / 新歌 / 飙升 / 原创）+ 风格与语种榜（ACG / 说唱 / 电音 / 韩语），均由官方维护并定期更新
 const CURATED = [
-  { id: '3778678', name: '云音乐热歌榜' },
-  { id: '3779629', name: '云音乐新歌榜' },
-  { id: '19723756', name: '云音乐飙升榜' },
-  { id: '2884035', name: '云音乐原创榜' },
-  { id: '71385702', name: '华语流行精选' },
-  { id: '2809578726', name: '欧美热歌精选' },
-  { id: '2881526457', name: '轻音乐 · 纯音治愈' },
-  { id: '2713521441', name: '国风新语' }
+  { id: '3778678', name: '热歌榜' },
+  { id: '3779629', name: '新歌榜' },
+  { id: '19723756', name: '飙升榜' },
+  { id: '2884035', name: '原创榜' },
+  { id: '71385702', name: '网易云ACG榜' },
+  { id: '991319590', name: '网易云中文说唱榜' },
+  { id: '1978921795', name: '网易云电音榜' },
+  { id: '745956260', name: '网易云韩语榜' }
 ]
 
 async function loadOne(item) {

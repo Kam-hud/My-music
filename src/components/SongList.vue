@@ -131,4 +131,40 @@ function isActive(song) {
     background-position: -200% 0;
   }
 }
+
+/* ===== 移动端（≤768px）：表头列与 SongRow 移动端布局保持一致 ===== */
+@media (max-width: 768px) {
+  .list-head {
+    grid-template-columns: 26px minmax(0, 1fr) 42px 92px;
+    gap: 8px;
+    padding: 6px 8px 8px;
+  }
+
+  .head-album,
+  .head-source {
+    display: none;
+  }
+
+  .empty {
+    padding: 40px 0;
+  }
+
+  .skeleton-row {
+    gap: 10px;
+    padding: 10px 8px;
+  }
+
+  .skeleton-cover {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .list-head {
+    grid-template-columns: 22px minmax(0, 1fr) 38px 88px;
+    gap: 6px;
+    padding: 6px 6px 8px;
+  }
+}
 </style>

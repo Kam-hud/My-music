@@ -51,4 +51,22 @@ import PlayerBar from './PlayerBar.vue'
   opacity: 0;
   transform: translateY(-6px);
 }
+
+/* ===== 移动端（≤768px）：导航转顶部栏，外壳改为纵向排布 ===== */
+@media (max-width: 768px) {
+  .shell {
+    flex-direction: column;
+    height: 100dvh;
+    padding-bottom: var(--playerbar-h);
+  }
+
+  /* 顶部栏高度自适应，内容区占满剩余高度并独立滚动 */
+  .content {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    padding: 14px 12px 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 </style>
